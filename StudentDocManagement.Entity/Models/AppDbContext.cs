@@ -29,10 +29,10 @@ namespace StudentDocManagement.Entity.Models
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<Student>()
-        .HasOne(s => s.ApplicationStatus)
-        .WithMany()
-        .HasForeignKey(s => s.ApplicationStatusId)
-        .OnDelete(DeleteBehavior.Restrict);
+                .HasOne(s => s.ApplicationStatus)
+                .WithMany()
+                .HasForeignKey(s => s.ApplicationStatusId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             // Disable cascade on Documents → Student
             modelBuilder.Entity<Document>()
