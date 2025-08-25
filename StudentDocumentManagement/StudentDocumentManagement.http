@@ -1,0 +1,6 @@
+@StudentDocumentManagement_HostAddress = http://localhost:5010
+
+GET {{StudentDocumentManagement_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
