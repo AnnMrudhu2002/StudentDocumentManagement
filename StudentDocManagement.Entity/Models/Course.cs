@@ -11,6 +11,7 @@ namespace StudentDocManagement.Entity.Models
     {
         [Key]
         //primary key
+        //hi
         public int CourseId { get; set; }
 
         [Required, StringLength(200)]
