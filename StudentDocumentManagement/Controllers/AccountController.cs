@@ -9,7 +9,7 @@ using StudentDocManagement.Entity.Models;
 
 namespace StudentDocumentManagement.Controllers
 {
-    /// testing
+    
     [Route("api/[controller]")]
     [ApiController]
     public class AuthenticationController : ControllerBase
@@ -71,7 +71,7 @@ namespace StudentDocumentManagement.Controllers
 
             var user = new ApplicationUser
             {
-                UserName = request.FullName,   // <-- Username = FullName
+                UserName = request.FullName,  
                 Email = request.Email,
                 FullName = request.FullName,
                 CreatedOn = DateTime.UtcNow,
@@ -94,7 +94,10 @@ namespace StudentDocumentManagement.Controllers
         public async Task<IActionResult> Login([FromBody] StudentDocManagement.Entity.Dto.LoginRequest request)
         {
             if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+                return BadRequest(new { message = "Please fill all details carefully" });
+
+            if (string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Password))
+                return BadRequest(new { message = "Email and password are required" });
 
             // Find user by email
             var user = await _userManager.FindByEmailAsync(request.Email);
@@ -109,6 +112,9 @@ namespace StudentDocumentManagement.Controllers
             // Check account status (optional)
             if (user.StatusId == 1) // Pending
                 return Unauthorized(new { message = "Account is pending approval" });
+
+            if (user.StatusId == 3) // Rejected
+                return Unauthorized(new { message = "Your account has been rejected. Please contact admin." });
 
             return Ok(new
             {

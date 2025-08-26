@@ -15,13 +15,18 @@ namespace StudentDocManagement.Entity.Dto
         [Required]
         public string RegisterNo { get; set; } = string.Empty;
 
-        [Required, EmailAddress]
+        [Required]
+        [EmailAddress]
         public string Email { get; set; } = string.Empty;
 
-        [Required, MinLength(6)]
+
+        [Required]
+        [DataType(DataType.Password, ErrorMessage = "Invalid password format")]
         public string Password { get; set; } = string.Empty;
 
-        [Required, Compare("Password", ErrorMessage = "Passwords do not match")]
+        [Compare("Password", ErrorMessage = "Password and Confirm Password do not match")]
+        [DataType(DataType.Password, ErrorMessage = "Invalid password format")]
+        [Display(Name = "Confirm Password")]
         public string ConfirmPassword { get; set; } = string.Empty;
     }
 
