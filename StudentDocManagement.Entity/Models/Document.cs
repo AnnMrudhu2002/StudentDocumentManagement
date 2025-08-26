@@ -33,6 +33,7 @@ namespace StudentDocManagement.Entity.Models
         [StringLength(500)]
         public string? Remarks { get; set; }
 
+        //example
         public DateTime UploadedOn { get; set; } = DateTime.UtcNow;
         public DateTime? ApprovedOn { get; set; }
     }
