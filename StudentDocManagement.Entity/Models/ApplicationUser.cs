@@ -12,6 +12,7 @@ namespace StudentDocManagement.Entity.Models
 {
     public class ApplicationUser : IdentityUser
     {
+        //FullName, RegisterNo, CreatedOn, StatusId, Status, Students
         [StringLength(200)]
         public string FullName { get; set; } = string.Empty;
 

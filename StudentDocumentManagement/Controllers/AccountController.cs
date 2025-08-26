@@ -9,6 +9,7 @@ using StudentDocManagement.Entity.Models;
 
 namespace StudentDocumentManagement.Controllers
 {
+    /// testing
     [Route("api/[controller]")]
     [ApiController]
     public class AuthenticationController : ControllerBase
@@ -24,7 +25,7 @@ namespace StudentDocumentManagement.Controllers
 
 
 
-        [HttpPost("register")]
+        [HttpPost("Register")]
         public async Task<IActionResult> Register([FromBody] StudentDocManagement.Entity.Dto.RegisterRequest request)
         {
             if (!ModelState.IsValid)
@@ -59,7 +60,7 @@ namespace StudentDocumentManagement.Controllers
 
 
 
-        [HttpPost("Adminregister")]
+        [HttpPost("AdminRegister")]
         public async Task<IActionResult> AdminRegister([FromBody] AdminRegisterRequest request)
         {
             if (!ModelState.IsValid)
@@ -89,7 +90,7 @@ namespace StudentDocumentManagement.Controllers
 
 
 
-        [HttpPost("login")]
+        [HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody] StudentDocManagement.Entity.Dto.LoginRequest request)
         {
             if (!ModelState.IsValid)
