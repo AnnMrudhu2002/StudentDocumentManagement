@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using StudentDocManagement.Entity.Models;
 
@@ -11,9 +12,11 @@ using StudentDocManagement.Entity.Models;
 namespace StudentDocManagement.Entity.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250825104934_third")]
+    partial class third
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -163,6 +166,9 @@ namespace StudentDocManagement.Entity.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
+                    b.Property<int>("AccountStatusId")
+                        .HasColumnType("int");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
@@ -213,9 +219,6 @@ namespace StudentDocManagement.Entity.Migrations
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("StatusId")
-                        .HasColumnType("int");
-
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
 
@@ -224,6 +227,8 @@ namespace StudentDocManagement.Entity.Migrations
                         .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AccountStatusId");
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
@@ -235,8 +240,6 @@ namespace StudentDocManagement.Entity.Migrations
 
                     b.HasIndex("RegisterNo")
                         .IsUnique();
-
-                    b.HasIndex("StatusId");
 
                     b.ToTable("AspNetUsers", (string)null);
                 });
@@ -478,6 +481,11 @@ namespace StudentDocManagement.Entity.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<string>("StatusType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
                     b.HasKey("StatusId");
 
                     b.ToTable("StatusMasters");
@@ -486,22 +494,62 @@ namespace StudentDocManagement.Entity.Migrations
                         new
                         {
                             StatusId = 1,
-                            StatusName = "Pending"
+                            StatusName = "Pending",
+                            StatusType = "RegistrationStatus"
                         },
                         new
                         {
                             StatusId = 2,
-                            StatusName = "Approved"
+                            StatusName = "Approved",
+                            StatusType = "RegistrationStatus"
                         },
                         new
                         {
                             StatusId = 3,
-                            StatusName = "Rejected"
+                            StatusName = "Rejected",
+                            StatusType = "RegistrationStatus"
                         },
                         new
                         {
                             StatusId = 4,
-                            StatusName = "Changes Needed"
+                            StatusName = "Pending",
+                            StatusType = "ProfileStatus"
+                        },
+                        new
+                        {
+                            StatusId = 5,
+                            StatusName = "Approved",
+                            StatusType = "ProfileStatus"
+                        },
+                        new
+                        {
+                            StatusId = 6,
+                            StatusName = "Changes Needed",
+                            StatusType = "ProfileStatus"
+                        },
+                        new
+                        {
+                            StatusId = 7,
+                            StatusName = "Rejected",
+                            StatusType = "ProfileStatus"
+                        },
+                        new
+                        {
+                            StatusId = 8,
+                            StatusName = "Pending",
+                            StatusType = "DocumentStatus"
+                        },
+                        new
+                        {
+                            StatusId = 9,
+                            StatusName = "Approved",
+                            StatusType = "DocumentStatus"
+                        },
+                        new
+                        {
+                            StatusId = 10,
+                            StatusName = "Rejected",
+                            StatusType = "DocumentStatus"
                         });
                 });
 
@@ -521,6 +569,9 @@ namespace StudentDocManagement.Entity.Migrations
                     b.Property<string>("AlternatePhoneNumber")
                         .HasMaxLength(15)
                         .HasColumnType("nvarchar(15)");
+
+                    b.Property<int>("ApplicationStatusId")
+                        .HasColumnType("int");
 
                     b.Property<string>("ApplicationUserId")
                         .HasColumnType("nvarchar(450)");
@@ -577,9 +628,6 @@ namespace StudentDocManagement.Entity.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("StatusId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("UpdatedOn")
                         .HasColumnType("datetime2");
 
@@ -589,13 +637,13 @@ namespace StudentDocManagement.Entity.Migrations
 
                     b.HasKey("StudentId");
 
+                    b.HasIndex("ApplicationStatusId");
+
                     b.HasIndex("ApplicationUserId");
 
                     b.HasIndex("CourseId");
 
                     b.HasIndex("IdProofTypeId");
-
-                    b.HasIndex("StatusId");
 
                     b.HasIndex("UserId")
                         .IsUnique();
@@ -702,13 +750,13 @@ namespace StudentDocManagement.Entity.Migrations
 
             modelBuilder.Entity("StudentDocManagement.Entity.Models.ApplicationUser", b =>
                 {
-                    b.HasOne("StudentDocManagement.Entity.Models.StatusMaster", "Status")
+                    b.HasOne("StudentDocManagement.Entity.Models.StatusMaster", "AccountStatus")
                         .WithMany()
-                        .HasForeignKey("StatusId")
+                        .HasForeignKey("AccountStatusId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Status");
+                    b.Navigation("AccountStatus");
                 });
 
             modelBuilder.Entity("StudentDocManagement.Entity.Models.Document", b =>
@@ -751,6 +799,12 @@ namespace StudentDocManagement.Entity.Migrations
 
             modelBuilder.Entity("StudentDocManagement.Entity.Models.Student", b =>
                 {
+                    b.HasOne("StudentDocManagement.Entity.Models.StatusMaster", "ApplicationStatus")
+                        .WithMany()
+                        .HasForeignKey("ApplicationStatusId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("StudentDocManagement.Entity.Models.ApplicationUser", null)
                         .WithMany("Students")
                         .HasForeignKey("ApplicationUserId");
@@ -767,23 +821,17 @@ namespace StudentDocManagement.Entity.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("StudentDocManagement.Entity.Models.StatusMaster", "Status")
-                        .WithMany()
-                        .HasForeignKey("StatusId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("StudentDocManagement.Entity.Models.ApplicationUser", "User")
                         .WithOne()
                         .HasForeignKey("StudentDocManagement.Entity.Models.Student", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("ApplicationStatus");
+
                     b.Navigation("Course");
 
                     b.Navigation("IdProofType");
-
-                    b.Navigation("Status");
 
                     b.Navigation("User");
                 });

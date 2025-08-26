@@ -29,10 +29,10 @@ namespace StudentDocManagement.Entity.Models
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<Student>()
-        .HasOne(s => s.ApplicationStatus)
-        .WithMany()
-        .HasForeignKey(s => s.ApplicationStatusId)
-        .OnDelete(DeleteBehavior.Restrict);
+                .HasOne(s => s.Status)
+                .WithMany()
+                .HasForeignKey(s => s.StatusId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             // Disable cascade on Documents → Student
             modelBuilder.Entity<Document>()
@@ -110,20 +110,12 @@ namespace StudentDocManagement.Entity.Models
             // ========================
             modelBuilder.Entity<StatusMaster>().HasData(
                 // RegistrationStatus
-                new StatusMaster { StatusId = 1, StatusType = "RegistrationStatus", StatusName = "Pending" },
-                new StatusMaster { StatusId = 2, StatusType = "RegistrationStatus", StatusName = "Approved" },
-                new StatusMaster { StatusId = 3, StatusType = "RegistrationStatus", StatusName = "Rejected" },
+                new StatusMaster { StatusId = 1, StatusName = "Pending" },
+                new StatusMaster { StatusId = 2, StatusName = "Approved" },
+                new StatusMaster { StatusId = 3, StatusName = "Rejected" },           
+                new StatusMaster { StatusId = 4, StatusName = "Changes Needed" }
+                
 
-                // ProfileStatus
-                new StatusMaster { StatusId = 4, StatusType = "ProfileStatus", StatusName = "Pending" },
-                new StatusMaster { StatusId = 5, StatusType = "ProfileStatus", StatusName = "Approved" },
-                new StatusMaster { StatusId = 6, StatusType = "ProfileStatus", StatusName = "Changes Needed" },
-                new StatusMaster { StatusId = 7, StatusType = "ProfileStatus", StatusName = "Rejected" },
-
-                // DocumentStatus
-                new StatusMaster { StatusId = 8, StatusType = "DocumentStatus", StatusName = "Pending" },
-                new StatusMaster { StatusId = 9, StatusType = "DocumentStatus", StatusName = "Approved" },
-                new StatusMaster { StatusId = 10, StatusType = "DocumentStatus", StatusName = "Rejected" }
             );
 
 

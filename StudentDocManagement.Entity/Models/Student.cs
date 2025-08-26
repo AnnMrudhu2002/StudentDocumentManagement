@@ -54,8 +54,8 @@ namespace StudentDocManagement.Entity.Models
         public int CourseId { get; set; }
         public Course? Course { get; set; }
 
-        public int ApplicationStatusId { get; set; }
-        public StatusMaster? ApplicationStatus { get; set; }
+        public int StatusId { get; set; }
+        public StatusMaster? Status { get; set; }
 
         public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedOn { get; set; } = DateTime.UtcNow;
