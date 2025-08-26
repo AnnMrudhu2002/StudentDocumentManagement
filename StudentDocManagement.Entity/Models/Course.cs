@@ -10,6 +10,7 @@ namespace StudentDocManagement.Entity.Models
     public class Course
     {
         [Key]
+        //primary key
         public int CourseId { get; set; }
 
         [Required, StringLength(200)]

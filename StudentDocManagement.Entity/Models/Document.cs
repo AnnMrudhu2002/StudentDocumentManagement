@@ -35,6 +35,7 @@ namespace StudentDocManagement.Entity.Models
 
         public DateTime UploadedOn { get; set; } = DateTime.UtcNow;
         public DateTime? ApprovedOn { get; set; }
+       
     }
 
 
