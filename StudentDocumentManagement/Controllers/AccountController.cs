@@ -22,6 +22,8 @@ namespace StudentDocumentManagement.Controllers
             _context = context;
         }
 
+
+
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] StudentDocManagement.Entity.Dto.RegisterRequest request)
         {
@@ -54,6 +56,38 @@ namespace StudentDocumentManagement.Controllers
             await _userManager.AddToRoleAsync(user, "Student");
             return Ok(new { message = "Registration successful", userId = user.Id });
         }
+
+
+
+        [HttpPost("Adminregister")]
+        public async Task<IActionResult> AdminRegister([FromBody] AdminRegisterRequest request)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (await _userManager.FindByEmailAsync(request.Email) != null)
+                return BadRequest(new { message = "Email already exists" });
+
+            var user = new ApplicationUser
+            {
+                UserName = request.FullName,   // <-- Username = FullName
+                Email = request.Email,
+                FullName = request.FullName,
+                CreatedOn = DateTime.UtcNow,
+                StatusId = 2 // Active
+            };
+
+            var result = await _userManager.CreateAsync(user, request.Password);
+            if (!result.Succeeded)
+                return BadRequest(result.Errors);
+
+            await _userManager.AddToRoleAsync(user, "Admin");
+            return Ok(new { message = "Admin Registration successful", userId = user.Id });
+        }
+
+
+
+
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] StudentDocManagement.Entity.Dto.LoginRequest request)
