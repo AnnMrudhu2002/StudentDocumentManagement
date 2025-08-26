@@ -45,6 +45,7 @@ builder.Services.AddAuthentication(options =>
 });
 
 builder.Services.AddScoped<ITokenRepository, TokenRepository>();
+builder.Services.AddScoped<IStudentRepository,StudentRepository>();
 
 
 // Add services to the container.
