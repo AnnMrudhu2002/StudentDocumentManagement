@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Win32;
 using StudentDocManagement.Entity.Dto;
 using StudentDocManagement.Entity.Models;
+using StudentDocManagement.Services.Repository;
 
 namespace StudentDocumentManagement.Controllers
 {
@@ -16,11 +17,15 @@ namespace StudentDocumentManagement.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly AppDbContext _context;
+        private readonly ITokenRepository _tokenRepository;
 
-        public AuthenticationController(UserManager<ApplicationUser> userManager, AppDbContext context)
+
+        public AuthenticationController(UserManager<ApplicationUser> userManager, ITokenRepository tokenRepository, AppDbContext context)
         {
             _userManager = userManager;
             _context = context;
+            _tokenRepository = tokenRepository;
+
         }
 
 
@@ -115,15 +120,24 @@ namespace StudentDocumentManagement.Controllers
 
             if (user.StatusId == 3) // Rejected
                 return Unauthorized(new { message = "Your account has been rejected. Please contact admin." });
+            // Get roles
+            var roles = await _userManager.GetRolesAsync(user);
 
-            return Ok(new
+            // Pass roles to token generation if needed
+            var token = await _tokenRepository.GetToken(user, roles); // Update your GetToken method
+
+            var userInfo = new UserInfoResultDto
             {
-                message = "Login successful",
-                userId = user.Id,
-                fullName = user.FullName,
-                registerNo = user.RegisterNo,
-                email = user.Email
-            });
+                Id = user.Id,
+                UserName = user.UserName,
+                Email = user.Email,
+                Token = token,
+                Roles = roles.ToList(),
+                RegisterNo = user.RegisterNo,
+            };
+
+            return Ok(userInfo);
+
         }
 
     }
