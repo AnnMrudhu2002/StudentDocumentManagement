@@ -9,5 +9,7 @@ namespace StudentDocManagement.Services.Repository
     public interface IStudentRepository
     {
         Task<(bool Success, string Message, List<object> Students)> GetPendingStudentsAsync();
+        Task<(bool Success, string Message)> UpdateStudentStatusAsync(string userId, int statusId);
+
     }
 }

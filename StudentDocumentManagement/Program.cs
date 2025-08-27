@@ -46,6 +46,8 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddScoped<ITokenRepository, TokenRepository>();
 builder.Services.AddScoped<IStudentRepository,StudentRepository>();
+builder.Services.AddScoped<IEmailService, EmailService>();
+
 
 
 // Add services to the container.

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using StudentDocManagement.Entity.Dto;
 using StudentDocManagement.Services.Repository;
 
 namespace StudentDocumentManagement.Controllers
@@ -25,5 +26,20 @@ namespace StudentDocumentManagement.Controllers
 
             return Ok(new { message, students });
         }
+
+
+        [HttpPatch("ApproveRejectStudents")]
+        public async Task<IActionResult> UpdateStatus([FromBody] StudentStatusUpdateDto dto)
+        {
+            int statusId = dto.IsApproved ? 2 : 3;
+
+            var (success, message) = await _repository.UpdateStudentStatusAsync(dto.UserId, statusId);
+
+            if (!success)
+                return NotFound(new { message });
+
+            return Ok(new { message });
+        }
+
     }
 }
