@@ -31,7 +31,8 @@ namespace StudentDocManagement.Services.Repository
                 {
                     FullName = u.FullName,
                     Email = u.Email,
-                    RegisterNo = u.RegisterNo
+                    RegisterNo = u.RegisterNo,
+                    Id = u.Id
                 })
                 .ToListAsync();
 
