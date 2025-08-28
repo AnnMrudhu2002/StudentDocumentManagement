@@ -19,10 +19,10 @@ namespace StudentDocumentManagement.Controllers
         [HttpGet("GetPendingStudents")]
         public async Task<IActionResult> GetPendingStudents()
         {
-            var (success, message, students) = await _repository.GetPendingStudentsAsync();
+            var (message, students) = await _repository.GetPendingStudentsAsync();
 
-            if (!success)
-                return NotFound(new { message });
+            //if (!success)
+            //    return NotFound(new { message });
 
             return Ok(new { message, students });
         }

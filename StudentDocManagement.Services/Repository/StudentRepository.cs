@@ -23,7 +23,7 @@ namespace StudentDocManagement.Services.Repository
         }
 
 
-        public async Task<(bool Success, string Message, List<object> Students)> GetPendingStudentsAsync()
+        public async Task<(string Message, List<object> Students)> GetPendingStudentsAsync()
         {
             var pendingStudents = await _context.Users
                 .Where(u => u.StatusId == 1) // Pending
@@ -37,9 +37,9 @@ namespace StudentDocManagement.Services.Repository
                 .ToListAsync();
 
             if (!pendingStudents.Any())
-                return (false, "No pending students found", new List<object>());
+                return ("No pending students found", new List<object>());
 
-            return (true, "Pending students retrieved successfully", pendingStudents.Cast<object>().ToList());
+            return ("Pending students retrieved successfully", pendingStudents.Cast<object>().ToList());
         }
 
 
