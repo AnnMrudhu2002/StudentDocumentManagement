@@ -36,13 +36,50 @@ namespace StudentDocumentManagement.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            // Check if email or register number already exists
-            if (await _userManager.FindByEmailAsync(request.Email) != null)
-                return BadRequest(new { message = "Email already exists" });
+            // Find user by email
+            var existingUser = await _userManager.FindByEmailAsync(request.Email);
 
-            if (_userManager.Users.Any(u => u.RegisterNo == request.RegisterNo))
+            if (existingUser != null)
+            {
+                if (existingUser.StatusId == 3) // Rejected
+                {
+                    // Update existing rejected user
+                    existingUser.FullName = request.FullName;
+                    existingUser.RegisterNo = request.RegisterNo;
+                    existingUser.CreatedOn = DateTime.UtcNow;
+                    existingUser.StatusId = 1; // Pending
+
+                    // Update password
+                    var token = await _userManager.GeneratePasswordResetTokenAsync(existingUser);
+                    var passwordResult = await _userManager.ResetPasswordAsync(existingUser, token, request.Password);
+
+                    if (!passwordResult.Succeeded)
+                    {
+                        return BadRequest(passwordResult.Errors);
+                    }
+
+                    await _userManager.UpdateAsync(existingUser);
+
+                    // Ensure role is Student
+                    if (!await _userManager.IsInRoleAsync(existingUser, "Student"))
+                    {
+                        await _userManager.AddToRoleAsync(existingUser, "Student");
+                    }
+
+                    return Ok(new { message = "Registration successful", userId = existingUser.Id });
+                }
+                else // Pending or Approved
+                {
+                    return BadRequest(new { message = "Email already exists" });
+                }
+            }
+
+            // Check register number for other users (ignore rejected)
+            var registerNoUser = _userManager.Users.FirstOrDefault(u => u.RegisterNo == request.RegisterNo && u.StatusId != 3);
+            if (registerNoUser != null)
                 return BadRequest(new { message = "Register number already exists" });
 
+            // Create new user
             var user = new ApplicationUser
             {
                 UserName = request.Email,
@@ -59,9 +96,12 @@ namespace StudentDocumentManagement.Controllers
             {
                 return BadRequest(result.Errors);
             }
+
             await _userManager.AddToRoleAsync(user, "Student");
+
             return Ok(new { message = "Registration successful", userId = user.Id });
         }
+
 
 
 

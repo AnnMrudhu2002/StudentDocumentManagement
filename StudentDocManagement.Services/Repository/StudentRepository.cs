@@ -52,16 +52,24 @@ namespace StudentDocManagement.Services.Repository
             if (student == null)
                 return (false, "Student not found");
 
+            // Check if status is still pending
+            if (student.StatusId != 1) // 1 = Pending
+                return (false, "Student status is already updated");
+
+
             student.StatusId = statusId;
             await _context.SaveChangesAsync();
 
-            // Send email via EmailService
-            var subject = statusId == 2
-            ? "Registration Approved - Student Document Management System"
-            : "Registration Rejected - Student Document Management System";
+            bool emailSent = false;
+            try
+            {
+                // Send email via EmailService
+                var subject = statusId == 2
+                ? "Registration Approved - Student Document Management System"
+                : "Registration Rejected - Student Document Management System";
 
-            var body = statusId == 2
-                ? $@"
+                var body = statusId == 2
+                    ? $@"
                 <p>Dear <b>{student.FullName}</b>,</p>
                 <p>We are pleased to inform you that your registration with the 
                 <b>Student Document Management System</b> has been <span style='color:green;font-weight:bold;'>approved</span>.</p>
@@ -80,7 +88,7 @@ namespace StudentDocManagement.Services.Repository
                 <b>Admin Team</b><br/>
                 Student Document Management System</p>
     "
-                : $@"
+                    : $@"
                 <p>Dear <b>{student.FullName}</b>,</p>
                 <p>We regret to inform you that your registration with the 
                 <b>Student Document Management System</b> has been <span style='color:red;font-weight:bold;'>rejected</span>.</p>
@@ -102,9 +110,25 @@ namespace StudentDocManagement.Services.Repository
                 ";
 
 
-            await _emailService.SendEmailAsync(student.Email, subject, body);
+                await _emailService.SendEmailAsync(student.Email, subject, body);
+                emailSent = true;
+            }
 
-            return (true, statusId == 2 ? "Student approved" : "Student rejected");
+            catch (Exception ex)
+            {
+                // Log error but do NOT fail the status update
+                Console.WriteLine("Email sending failed: " + ex.Message);
+            }
+
+
+            // Final response message
+            string statusMessage = statusId == 2 ? "Student approved" : "Student rejected";
+            if (!emailSent)
+            {
+                statusMessage += " (but email sending failed)";
+            }
+
+            return (false, statusMessage);
         }
     }
 }
