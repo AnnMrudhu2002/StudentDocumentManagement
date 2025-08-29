@@ -48,25 +48,25 @@ namespace StudentDocManagement.Entity.Models
                 .HasForeignKey<Student>(s => s.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // ✅ Unique constraint on RegisterNo
+            // Unique constraint on RegisterNo
             modelBuilder.Entity<ApplicationUser>()
                 .HasIndex(u => u.RegisterNo)
                 .IsUnique();
 
-            // ✅ Default value for Notification.IsRead
+            // Default value for Notification.IsRead
             modelBuilder.Entity<Notification>()
                 .Property(n => n.IsRead)
                 .HasDefaultValue(false);
 
             modelBuilder.Entity<StudentEducation>()
                 .Property(se => se.MarksPercentage)
-                .HasPrecision(5, 2); // total 5 digits, 2 after decimal (e.g., 100.00)
+                .HasPrecision(5, 2); 
 
             modelBuilder.Entity<StudentEducation>()
-    .HasOne(se => se.Student)
-    .WithMany(s => s.StudentEducations)
-    .HasForeignKey(se => se.StudentId)
-    .OnDelete(DeleteBehavior.Restrict);  // <-- prevents multiple cascade paths
+                .HasOne(se => se.Student)
+                .WithMany(s => s.StudentEducations)
+                .HasForeignKey(se => se.StudentId)
+                .OnDelete(DeleteBehavior.Restrict); 
 
 
             // ========================
