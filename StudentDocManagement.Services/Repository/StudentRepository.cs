@@ -60,7 +60,6 @@ namespace StudentDocManagement.Services.Repository
             student.StatusId = statusId;
             await _context.SaveChangesAsync();
 
-            bool emailSent = false;
             try
             {
                 // Send email via EmailService
@@ -111,7 +110,6 @@ namespace StudentDocManagement.Services.Repository
 
 
                 await _emailService.SendEmailAsync(student.Email, subject, body);
-                emailSent = true;
             }
 
             catch (Exception ex)
@@ -121,14 +119,8 @@ namespace StudentDocManagement.Services.Repository
             }
 
 
-            // Final response message
-            string statusMessage = statusId == 2 ? "Student approved" : "Student rejected";
-            if (!emailSent)
-            {
-                statusMessage += " (but email sending failed)";
-            }
 
-            return (false, statusMessage);
+            return (true, statusId == 2 ? "Student approved" : "Student rejected");
         }
     }
 }
