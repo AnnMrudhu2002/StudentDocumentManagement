@@ -19,7 +19,7 @@ namespace StudentDocManagement.Entity.Models
         [Required]
         public string UserId { get; set; } = string.Empty;
 
-        [ForeignKey("UserId")]   // ✅ clarify because table is IdentityUser
+        [ForeignKey("UserId")]   
         public ApplicationUser? User { get; set; }
 
         [Required, StringLength(20)]

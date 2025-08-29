@@ -80,7 +80,7 @@ namespace StudentDocumentManagement.Controllers
                 Email = request.Email,
                 FullName = request.FullName,
                 CreatedOn = DateTime.UtcNow,
-                StatusId = 2 // Active
+                StatusId = 2 
             };
 
             var result = await _userManager.CreateAsync(user, request.Password);
@@ -114,7 +114,7 @@ namespace StudentDocumentManagement.Controllers
             if (!isPasswordValid)
                 return Unauthorized(new { message = "Invalid email or password" });
 
-            // Check account status (optional)
+            // Check account status 
             if (user.StatusId == 1) // Pending
                 return Unauthorized(new { message = "Account is pending approval" });
 
@@ -124,16 +124,12 @@ namespace StudentDocumentManagement.Controllers
             var roles = await _userManager.GetRolesAsync(user);
 
             // Pass roles to token generation if needed
-            var token = await _tokenRepository.GetToken(user, roles); // Update your GetToken method
+            var token = await _tokenRepository.GetToken(user, roles); 
 
             var userInfo = new UserInfoResultDto
             {
-                Id = user.Id,
-                UserName = user.UserName,
-                Email = user.Email,
                 Token = token,
-                Roles = roles.ToList(),
-                RegisterNo = user.RegisterNo,
+            
             };
 
             return Ok(userInfo);

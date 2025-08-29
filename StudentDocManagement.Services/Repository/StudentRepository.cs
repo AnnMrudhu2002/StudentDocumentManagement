@@ -23,7 +23,7 @@ namespace StudentDocManagement.Services.Repository
         }
 
 
-        public async Task<(bool Success, string Message, List<object> Students)> GetPendingStudentsAsync()
+        public async Task<(string Message, List<object> Students)> GetPendingStudentsAsync()
         {
             var pendingStudents = await _context.Users
                 .Where(u => u.StatusId == 1) // Pending
@@ -37,9 +37,9 @@ namespace StudentDocManagement.Services.Repository
                 .ToListAsync();
 
             if (!pendingStudents.Any())
-                return (false, "No pending students found", new List<object>());
+                return ("No pending students found", new List<object>());
 
-            return (true, "Pending students retrieved successfully", pendingStudents.Cast<object>().ToList());
+            return ("Pending students retrieved successfully", pendingStudents.Cast<object>().ToList());
         }
 
 
@@ -57,49 +57,49 @@ namespace StudentDocManagement.Services.Repository
 
             // Send email via EmailService
             var subject = statusId == 2
-     ? "Registration Approved - Student Document Management System"
-     : "Registration Rejected - Student Document Management System";
+            ? "Registration Approved - Student Document Management System"
+            : "Registration Rejected - Student Document Management System";
 
             var body = statusId == 2
                 ? $@"
-        <p>Dear <b>{student.FullName}</b>,</p>
-        <p>We are pleased to inform you that your registration with the 
-        <b>Student Document Management System</b> has been <span style='color:green;font-weight:bold;'>approved</span>.</p>
+                <p>Dear <b>{student.FullName}</b>,</p>
+                <p>We are pleased to inform you that your registration with the 
+                <b>Student Document Management System</b> has been <span style='color:green;font-weight:bold;'>approved</span>.</p>
         
-        <p><u>Registration Details:</u></p>
-        <ul>
-            <li><b>Full Name:</b> {student.FullName}</li>
-            <li><b>Email:</b> {student.Email}</li>
-            <li><b>Register Number:</b> {student.RegisterNo}</li>
-        </ul>
+                <p><u>Registration Details:</u></p>
+                <ul>
+                    <li><b>Full Name:</b> {student.FullName}</li>
+                    <li><b>Email:</b> {student.Email}</li>
+                    <li><b>Register Number:</b> {student.RegisterNo}</li>
+                </ul>
 
-        <p>You can now log in to the system and access your dashboard.</p>
+                <p>You can now log in to the system and access your dashboard.</p>
         
-        <br/>
-        <p>Best Regards,<br/>
-        <b>Admin Team</b><br/>
-        Student Document Management System</p>
+                <br/>
+                <p>Best Regards,<br/>
+                <b>Admin Team</b><br/>
+                Student Document Management System</p>
     "
                 : $@"
-        <p>Dear <b>{student.FullName}</b>,</p>
-        <p>We regret to inform you that your registration with the 
-        <b>Student Document Management System</b> has been <span style='color:red;font-weight:bold;'>rejected</span>.</p>
+                <p>Dear <b>{student.FullName}</b>,</p>
+                <p>We regret to inform you that your registration with the 
+                <b>Student Document Management System</b> has been <span style='color:red;font-weight:bold;'>rejected</span>.</p>
         
-        <p><u>Registration Details:</u></p>
-        <ul>
-            <li><b>Full Name:</b> {student.FullName}</li>
-            <li><b>Email:</b> {student.Email}</li>
-            <li><b>Register Number:</b> {student.RegisterNo}</li>
-        </ul>
+                <p><u>Registration Details:</u></p>
+                <ul>
+                    <li><b>Full Name:</b> {student.FullName}</li>
+                    <li><b>Email:</b> {student.Email}</li>
+                    <li><b>Register Number:</b> {student.RegisterNo}</li>
+                </ul>
 
-        <p>If you believe this decision was made in error or wish to reapply, 
-        kindly contact the administration office for further clarification.</p>
+                <p>If you believe this decision was made in error or wish to reapply, 
+                kindly contact the administration office for further clarification.</p>
         
-        <br/>
-        <p>Best Regards,<br/>
-        <b>Admin Team</b><br/>
-        Student Document Management System</p>
-    ";
+                <br/>
+                <p>Best Regards,<br/>
+                <b>Admin Team</b><br/>
+                Student Document Management System</p>
+                ";
 
 
             await _emailService.SendEmailAsync(student.Email, subject, body);

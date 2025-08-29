@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using StudentDocManagement.Entity.Dto;
 using StudentDocManagement.Services.Repository;
@@ -7,6 +8,8 @@ namespace StudentDocumentManagement.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = "Bearer")]
+    [Authorize(Roles = "Admin")]
     public class StudentController : ControllerBase
     {
         private readonly IStudentRepository _repository;
@@ -19,10 +22,7 @@ namespace StudentDocumentManagement.Controllers
         [HttpGet("GetPendingStudents")]
         public async Task<IActionResult> GetPendingStudents()
         {
-            var (success, message, students) = await _repository.GetPendingStudentsAsync();
-
-            if (!success)
-                return NotFound(new { message });
+            var (message, students) = await _repository.GetPendingStudentsAsync();
 
             return Ok(new { message, students });
         }

@@ -25,7 +25,7 @@ namespace StudentDocManagement.Entity.Models
 
         public int PassingYear { get; set; }
 
-     
+    
         public decimal MarksPercentage { get; set; }
 
         public int DocumentId { get; set; }
