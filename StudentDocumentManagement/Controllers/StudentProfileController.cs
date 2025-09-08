@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using StudentDocManagement.Entity.Dto;
 using StudentDocManagement.Entity.Models;
 using StudentDocManagement.Services.Interface;
@@ -16,12 +17,29 @@ namespace StudentDocumentManagement.Controllers
     {
         private readonly IStudentProfileRepository _repository;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly AppDbContext _context;
 
-        public StudentProfileController(IStudentProfileRepository repository, UserManager<ApplicationUser> userManager)
+        public StudentProfileController(IStudentProfileRepository repository, UserManager<ApplicationUser> userManager, AppDbContext context)
         {
             _repository = repository;
             _userManager = userManager;
+            _context = context;
         }
+
+        [HttpGet("GetProfile")]
+        public async Task<IActionResult> GetProfile()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+                return Unauthorized(new { message = "User not found" });
+
+            var student = await _repository.GetStudentByUserIdAsync(user.Id);
+            if (student == null)
+                return NotFound(new { message = "Profile not found" });
+
+            return Ok(student);
+        }
+
 
         [HttpPost("SubmitProfile")]
         public async Task<IActionResult> SubmitProfile([FromBody] StudentProfileDto dto)
@@ -36,6 +54,63 @@ namespace StudentDocumentManagement.Controllers
                 return BadRequest(new { message });
 
             return Ok(new { message, studentId = student!.StudentId });
+        }
+
+        [HttpGet("GetEducation")]
+        public async Task<IActionResult> GetEducation()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+                return Unauthorized(new { message = "User not found" });
+
+            var student = await _repository.GetStudentByUserIdAsync(user.Id);
+            if (student == null)
+                return NotFound(new { message = "Student profile not found" });
+
+            var education = await _repository.GetEducationByStudentIdAsync(student.StudentId);
+            if (education == null)
+                return NotFound(new { message = "Education details not found" });
+
+            return Ok(education);
+        }
+
+
+        [HttpPost("SubmitEducation")]
+        public async Task<IActionResult> SubmitEducation([FromBody] StudentEducationDto dto)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+                return Unauthorized(new { message = "User not found" });
+
+            var student = await _repository.GetStudentByUserIdAsync(user.Id);
+            if (student == null)
+                return NotFound(new { message = "Student profile not found" });
+
+            var (success, message, education) = await _repository.SubmitEducationAsync(student, dto);
+
+            if (!success)
+                return BadRequest(new { message });
+
+            return Ok(new { message, educationId = education!.EducationId });
+        }
+
+
+        [HttpGet("IdProofTypes")]
+        public async Task<IActionResult> GetIdProofTypes()
+        {
+            var list = await _context.IdProofTypes
+                                     .Select(x => new { x.IdProofTypeId, x.TypeName })
+                                     .ToListAsync();
+            return Ok(list);
+        }
+
+        [HttpGet("Courses")]
+        public async Task<IActionResult> GetCourses()
+        {
+            var list = await _context.Courses
+                                     .Select(x => new { x.CourseId, x.CourseName })
+                                     .ToListAsync();
+            return Ok(list);
         }
     }
 }

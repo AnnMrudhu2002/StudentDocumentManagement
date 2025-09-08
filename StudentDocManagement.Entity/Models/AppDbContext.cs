@@ -113,7 +113,8 @@ namespace StudentDocManagement.Entity.Models
                 new StatusMaster { StatusId = 1, StatusName = "Pending" },
                 new StatusMaster { StatusId = 2, StatusName = "Approved" },
                 new StatusMaster { StatusId = 3, StatusName = "Rejected" },           
-                new StatusMaster { StatusId = 4, StatusName = "Changes Needed" }
+                new StatusMaster { StatusId = 4, StatusName = "Changes Needed" },
+                new StatusMaster { StatusId = 5, StatusName = "In Review" }
                 
 
             );
