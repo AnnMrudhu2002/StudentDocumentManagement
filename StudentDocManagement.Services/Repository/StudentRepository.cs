@@ -118,8 +118,6 @@ namespace StudentDocManagement.Services.Repository
                 Console.WriteLine("Email sending failed: " + ex.Message);
             }
 
-
-
             return (true, statusId == 2 ? "Student approved" : "Student rejected");
         }
     }

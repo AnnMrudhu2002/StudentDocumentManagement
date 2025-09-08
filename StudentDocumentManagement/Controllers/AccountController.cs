@@ -28,8 +28,6 @@ namespace StudentDocumentManagement.Controllers
 
         }
 
-
-
         [HttpPost("Register")]
         public async Task<IActionResult> Register([FromBody] StudentDocManagement.Entity.Dto.RegisterRequest request)
         {
@@ -102,9 +100,6 @@ namespace StudentDocumentManagement.Controllers
             return Ok(new { message = "Registration successful", userId = user.Id });
         }
 
-
-
-
         [HttpPost("AdminRegister")]
         public async Task<IActionResult> AdminRegister([FromBody] AdminRegisterRequest request)
         {
@@ -131,18 +126,14 @@ namespace StudentDocumentManagement.Controllers
             return Ok(new { message = "Admin Registration successful", userId = user.Id });
         }
 
-
-
-
-
         [HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody] StudentDocManagement.Entity.Dto.LoginRequest request)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(new { message = "Please fill all details carefully" });
+            //if (!ModelState.IsValid)
+            //    return BadRequest(new { message = "Please fill all details carefully" });
 
-            if (string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Password))
-                return BadRequest(new { message = "Email and password are required" });
+            //if (string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Password))
+            //    return BadRequest(new { message = "Email and password are required" });
 
             // Find user by email
             var user = await _userManager.FindByEmailAsync(request.Email);
@@ -159,7 +150,7 @@ namespace StudentDocumentManagement.Controllers
                 return Unauthorized(new { message = "Account is pending approval" });
 
             if (user.StatusId == 3) // Rejected
-                return Unauthorized(new { message = "Your account has been rejected. Please contact admin." });
+                return Unauthorized(new { message = "Your account has been rejected. Please contact the Institution." });
             // Get roles
             var roles = await _userManager.GetRolesAsync(user);
 
@@ -168,6 +159,7 @@ namespace StudentDocumentManagement.Controllers
 
             var userInfo = new UserInfoResultDto
             {
+              
                 Token = token,
             
             };

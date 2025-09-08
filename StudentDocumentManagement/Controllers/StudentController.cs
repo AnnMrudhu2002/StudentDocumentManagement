@@ -36,10 +36,11 @@ namespace StudentDocumentManagement.Controllers
             var (success, message) = await _repository.UpdateStudentStatusAsync(dto.UserId, statusId);
 
             if (!success)
-                return BadRequest(new { message });
+                return Ok(new { message });
+                //return BadRequest(new { message });
+
 
             return Ok(new { message });
         }
-
     }
 }

@@ -22,7 +22,7 @@ namespace StudentDocManagement.Services.Repository
 
         public Task<string> GetToken(ApplicationUser user, IList<string> roles)
         {
-            var authClaims = new List<Claim>
+        var authClaims = new List<Claim>
         {
             new Claim(ClaimTypes.Name, user.UserName),
             new Claim(ClaimTypes.NameIdentifier, user.Id),

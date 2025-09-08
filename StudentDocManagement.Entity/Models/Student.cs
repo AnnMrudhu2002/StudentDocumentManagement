@@ -22,7 +22,7 @@ namespace StudentDocManagement.Entity.Models
         [ForeignKey("UserId")]   
         public ApplicationUser? User { get; set; }
 
-        [Required, StringLength(20)]
+        [Required, StringLength(8)]
         public string RegisterNo { get; set; } = string.Empty;
 
         public DateTime DOB { get; set; }
