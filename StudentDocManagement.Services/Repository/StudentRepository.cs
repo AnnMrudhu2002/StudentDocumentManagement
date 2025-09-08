@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using StudentDocManagement.Entity.Models;
+using StudentDocManagement.Services.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;

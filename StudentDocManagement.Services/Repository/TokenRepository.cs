@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using StudentDocManagement.Entity.Models;
+using StudentDocManagement.Services.Interface;
 
 namespace StudentDocManagement.Services.Repository
 {

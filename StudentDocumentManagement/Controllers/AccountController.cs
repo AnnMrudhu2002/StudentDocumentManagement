@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Win32;
 using StudentDocManagement.Entity.Dto;
 using StudentDocManagement.Entity.Models;
-using StudentDocManagement.Services.Repository;
+using StudentDocManagement.Services.Interface;
 
 namespace StudentDocumentManagement.Controllers
 {
@@ -101,7 +101,7 @@ namespace StudentDocumentManagement.Controllers
         }
 
         [HttpPost("AdminRegister")]
-        public async Task<IActionResult> AdminRegister([FromBody] AdminRegisterRequest request)
+        public async Task<IActionResult> AdminRegister([FromBody] AdminRegisterDto request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -129,12 +129,6 @@ namespace StudentDocumentManagement.Controllers
         [HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody] StudentDocManagement.Entity.Dto.LoginRequest request)
         {
-            //if (!ModelState.IsValid)
-            //    return BadRequest(new { message = "Please fill all details carefully" });
-
-            //if (string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Password))
-            //    return BadRequest(new { message = "Email and password are required" });
-
             // Find user by email
             var user = await _userManager.FindByEmailAsync(request.Email);
             if (user == null)

@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using StudentDocManagement.Entity.Dto;
-using StudentDocManagement.Services.Repository;
+using StudentDocManagement.Services.Interface;
 
 namespace StudentDocumentManagement.Controllers
 {

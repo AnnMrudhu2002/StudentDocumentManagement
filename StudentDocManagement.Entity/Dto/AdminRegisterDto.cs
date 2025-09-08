@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace StudentDocManagement.Entity.Dto
 {
-    public class AdminRegisterRequest
+    public class AdminRegisterDto
     {
         [Required(ErrorMessage = "Full Name is required")]
         public string FullName { get; set; }

@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace StudentDocManagement.Services.Repository
+namespace StudentDocManagement.Services.Interface
 {
     public interface IEmailService
     {
-        Task SendEmailAsync( string toEmail, string subject, string body );
+        Task SendEmailAsync(string toEmail, string subject, string body);
     }
 }
