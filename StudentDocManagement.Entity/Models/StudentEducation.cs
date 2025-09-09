@@ -28,8 +28,8 @@ namespace StudentDocManagement.Entity.Models
     
         public decimal MarksPercentage { get; set; }
 
-        public int DocumentId { get; set; }
-        public Document? Document { get; set; }
+        //public int DocumentId { get; set; }
+        //public Document? Document { get; set; }
 
         public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedOn { get; set; } = DateTime.UtcNow;

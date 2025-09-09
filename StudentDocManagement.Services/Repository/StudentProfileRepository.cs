@@ -131,7 +131,7 @@ namespace StudentDocManagement.Services.Repository
                     PassingYear = dto.PassingYear,
                     MarksPercentage = dto.MarksPercentage,
                     CreatedOn = DateTime.UtcNow,
-                    DocumentId = 1
+                    //DocumentId = 1
                 };
 
                 _context.StudentEducations.Add(education);

@@ -75,7 +75,7 @@ namespace StudentDocManagement.Entity.Models
             modelBuilder.Entity<Course>().HasData(
                 new Course { CourseId = 1, CourseName = "Computer Science" },
                 new Course { CourseId = 2, CourseName = "Information Technology" },
-                new Course { CourseId = 3, CourseName = "Electronics and Communication" },
+                new Course { CourseId = 3, CourseName = "Electronics and Communication Engineering" },
                 new Course { CourseId = 4, CourseName = "Mechanical Engineering" },
                 new Course { CourseId = 5, CourseName = "Civil Engineering" },
                 new Course { CourseId = 6, CourseName = "Electrical Engineering" },
