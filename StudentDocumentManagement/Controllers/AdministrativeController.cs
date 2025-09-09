@@ -29,7 +29,7 @@ namespace StudentDocumentManagement.Controllers
 
         [HttpPost("CreateRole")]
 
-        public async Task<IActionResult> CreateRoles(CreateRoleViewModel model)
+        public async Task<IActionResult> CreateRoles(CreateRoleDto model)
         {
 
             if (model == null || string.IsNullOrWhiteSpace(model.RoleName))
@@ -65,7 +65,7 @@ namespace StudentDocumentManagement.Controllers
         }
 
         [HttpPost("AssignRole")]
-        public async Task<IActionResult> AssignRole([FromBody] AssignRoleRequest request)
+        public async Task<IActionResult> AssignRole([FromBody] AssignRoleDto request)
         {
             var user = await _userManager.FindByNameAsync(request.Email);
             if (user == null)

@@ -7,13 +7,15 @@ using System.Threading.Tasks;
 
 namespace StudentDocManagement.Entity.Dto
 {
-    public class UserInfoRequest
+    public class LoginDto
     {
-        [EmailAddress]
         [Required]
-        public string Email { get; set; }
+        [EmailAddress]
+        public string Email { get; set; } = string.Empty;
 
         [Required]
-        public string Password { get; set; }
+        [DataType(DataType.Password, ErrorMessage = "Invalid password format")]
+
+        public string Password { get; set; } = string.Empty;
     }
 }

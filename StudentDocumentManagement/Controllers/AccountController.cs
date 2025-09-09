@@ -29,7 +29,7 @@ namespace StudentDocumentManagement.Controllers
         }
 
         [HttpPost("Register")]
-        public async Task<IActionResult> Register([FromBody] StudentDocManagement.Entity.Dto.RegisterRequest request)
+        public async Task<IActionResult> Register([FromBody] StudentDocManagement.Entity.Dto.RegisterDto request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -127,7 +127,7 @@ namespace StudentDocumentManagement.Controllers
         }
 
         [HttpPost("Login")]
-        public async Task<IActionResult> Login([FromBody] StudentDocManagement.Entity.Dto.LoginRequest request)
+        public async Task<IActionResult> Login([FromBody] StudentDocManagement.Entity.Dto.LoginDto request)
         {
             // Find user by email
             var user = await _userManager.FindByEmailAsync(request.Email);
@@ -151,7 +151,7 @@ namespace StudentDocumentManagement.Controllers
             // Pass roles to token generation if needed
             var token = await _tokenRepository.GetToken(user, roles); 
 
-            var userInfo = new UserInfoResultDto
+            var userInfo = new LoginResponseDto
             {
               
                 Token = token,
