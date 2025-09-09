@@ -21,22 +21,22 @@ namespace StudentDocumentManagement.Controllers
         }
 
         [HttpPost("UploadDocument")]
-        public async Task<IActionResult> UploadDocument(
-     IFormFile file,
-     [FromForm] int documentTypeId)
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> UploadDocument(IFormFile file,
+                                                 [FromForm] int documentTypeId)
         {
+          
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
                 return Unauthorized(new { message = "User not found" });
-
-            if (file == null || file.Length == 0)
-                return BadRequest(new { message = "No file uploaded" });
 
             var fileDto = new FileUploadDto
             {
                 FileName = file.FileName,
                 FileStream = file.OpenReadStream(),
-                DocumentTypeId = documentTypeId
+                DocumentTypeId = documentTypeId,
+                ContentType = file.ContentType,
+                FileSize = file.Length
             };
 
             var (success, message, document) = await _repo.UploadDocumentAsync(user, fileDto);
@@ -49,14 +49,16 @@ namespace StudentDocumentManagement.Controllers
 
 
 
-      
 
-        [HttpGet("student/{studentId}")]
-        public async Task<IActionResult> GetByStudentId(int studentId)
-        {
-            var docs = await _repo.GetStudentDocumentsWithDetailsAsync(studentId);
-            return Ok(docs);
-        }
+
+
+
+        //[HttpGet("student/{studentId}")]
+        //public async Task<IActionResult> GetByStudentId(int studentId)
+        //{
+        //    var docs = await _repo.GetStudentDocumentsWithDetailsAsync(studentId);
+        //    return Ok(docs);
+        //}
 
         [HttpPut("status/{documentId}")]
         public async Task<IActionResult> UpdateStatus(int documentId, [FromQuery] int statusId, [FromQuery] string? remarks)
