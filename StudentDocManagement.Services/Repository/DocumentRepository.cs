@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using StudentDocManagement.Entity.Dto;
 using StudentDocManagement.Entity.Models;
 using StudentDocManagement.Services.Interface;
 
@@ -34,14 +35,24 @@ namespace StudentDocManagement.Services.Repository
                 .FirstOrDefaultAsync(d => d.DocumentId == id);
         }
 
-        public async Task<IEnumerable<Document>> GetByStudentIdAsync(int studentId)
+        public async Task<IEnumerable<StudentDocumentDto>> GetStudentDocumentsWithDetailsAsync(int studentId)
         {
             return await _context.Documents
                 .Include(d => d.DocumentType)
                 .Include(d => d.Status)
                 .Where(d => d.StudentId == studentId)
+                .Select(d => new StudentDocumentDto
+                {
+                    DocumentId = d.DocumentId,
+                    DocumentTypeName = d.DocumentType.TypeName, // assumes you have TypeName field
+                    StatusName = d.Status.StatusName,          // assumes you have StatusName field
+                    Remarks = d.Remarks,
+                    UploadedOn = d.UploadedOn,
+                    FileName = d.FileName
+                })
                 .ToListAsync();
         }
+
 
         public async Task<bool> UpdateStatusAsync(int documentId, int statusId, string? remarks)
         {

@@ -64,7 +64,7 @@ namespace StudentDocumentManagement.Controllers
         [HttpGet("student/{studentId}")]
         public async Task<IActionResult> GetByStudentId(int studentId)
         {
-            var docs = await _repo.GetByStudentIdAsync(studentId);
+            var docs = await _repo.GetStudentDocumentsWithDetailsAsync(studentId);
             return Ok(docs);
         }
 
@@ -76,5 +76,9 @@ namespace StudentDocumentManagement.Controllers
 
             return Ok(new { message = "Document status updated" });
         }
+
+
+
+
     }
 }
