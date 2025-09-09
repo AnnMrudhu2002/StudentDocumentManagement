@@ -13,26 +13,50 @@ namespace StudentDocManagement.Services.Repository
     public class DocumentRepository : IDocumentRepository
     {
         private readonly AppDbContext _context;
+        private readonly IStudentProfileRepository _repo;
 
-        public DocumentRepository(AppDbContext context)
+        public DocumentRepository(AppDbContext context, IStudentProfileRepository repo)
         {
             _context = context;
+            _repo = repo;
         }
 
-        public async Task<Document> UploadAsync(Document document)
+        public async Task<(bool Success, string Message, Document? Document)> UploadDocumentAsync(
+        ApplicationUser user,FileUploadDto fileDto)
         {
+            var student = await _repo.GetStudentByUserIdAsync(user.Id);
+            if (student == null)
+                return (false, "Student profile not found", null);
+
+            if (fileDto.FileStream == null || fileDto.FileStream.Length == 0)
+                return (false, "No file uploaded", null);
+
+            var storagePath = Path.Combine(Directory.GetCurrentDirectory(), "FileStorage");
+            if (!Directory.Exists(storagePath))
+                Directory.CreateDirectory(storagePath);
+
+            var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(fileDto.FileName);
+            var filePath = Path.Combine(storagePath, uniqueFileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await fileDto.FileStream.CopyToAsync(stream);
+            }
+
+            var document = new Document
+            {
+                StudentId = student.StudentId,
+                DocumentTypeId = fileDto.DocumentTypeId,
+                FileName = uniqueFileName,
+                FilePath = filePath,
+                StatusId = 1,//Pending
+                UploadedOn = DateTime.UtcNow
+            };
+
             _context.Documents.Add(document);
             await _context.SaveChangesAsync();
-            return document;
-        }
 
-        public async Task<Document?> GetByIdAsync(int id)
-        {
-            return await _context.Documents
-                .Include(d => d.DocumentType)
-                .Include(d => d.Status)
-                .Include(d => d.Student)
-                .FirstOrDefaultAsync(d => d.DocumentId == id);
+            return (true, "Document uploaded successfully", document);
         }
 
         public async Task<IEnumerable<StudentDocumentDto>> GetStudentDocumentsWithDetailsAsync(int studentId)

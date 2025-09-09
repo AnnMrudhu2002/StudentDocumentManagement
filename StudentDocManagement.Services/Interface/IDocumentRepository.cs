@@ -10,8 +10,10 @@ namespace StudentDocManagement.Services.Interface
 {
     public interface IDocumentRepository
     {
-        Task<Document> UploadAsync(Document document);
-        Task<Document?> GetByIdAsync(int id);
+        Task<(bool Success, string Message, Document? Document)> UploadDocumentAsync(
+     ApplicationUser user,
+     FileUploadDto fileDto);
+        //Task<Document?> GetByIdAsync(int id);
         Task<IEnumerable<StudentDocumentDto>> GetStudentDocumentsWithDetailsAsync(int studentId);
 
         Task<bool> UpdateStatusAsync(int documentId, int statusId, string? remarks);
