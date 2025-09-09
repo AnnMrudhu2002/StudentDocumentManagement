@@ -92,5 +92,25 @@ namespace StudentDocManagement.Services.Repository
             await _context.SaveChangesAsync();
             return true;
         }
+
+
+
+
+
+
+        public async Task<Student?> GetStudentByUserIdAsync(string userId)
+        {
+            return await _context.Students.FirstOrDefaultAsync(s => s.UserId == userId);
+        }
+
+        public async Task<Document?> GetByIdAsync(int id)
+        {
+            return await _context.Documents
+                .Include(d => d.DocumentType)
+                .Include(d => d.Status)
+                .Include(d => d.Student)
+                .FirstOrDefaultAsync(d => d.DocumentId == id);
+        }
+
     }
 }

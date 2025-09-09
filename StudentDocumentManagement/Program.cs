@@ -51,7 +51,7 @@ builder.Services.AddScoped<IStudentRepository,StudentRepository>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IStudentProfileRepository, StudentProfileRepository>();
 builder.Services.AddScoped<IDocumentRepository, DocumentRepository>();
-
+builder.Services.AddScoped<IAdminRepository, AdminRepository>();
 
 
 

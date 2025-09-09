@@ -1,0 +1,60 @@
+﻿using Microsoft.EntityFrameworkCore;
+using StudentDocManagement.Entity.Models;
+using StudentDocManagement.Entity.Dto;
+
+public class AdminRepository : IAdminRepository
+{
+    private readonly AppDbContext _context;
+
+    public AdminRepository(AppDbContext context)
+    {
+        _context = context;
+    }
+
+    public async Task<IEnumerable<StudentWithDocsDto>> GetStudentsForApprovalAsync()
+    {
+        return await _context.Students
+            .Include(s => s.User)
+            .Where(s => s.Documents.Any(d => d.StatusId == 1)) // Only students with pending documents
+            .Select(s => new StudentWithDocsDto
+            {
+                StudentId = s.StudentId,
+                FullName = s.User!.FullName,
+                RegisterNo = s.User.RegisterNo
+            })
+            .ToListAsync();
+    }
+
+
+    public async Task<IEnumerable<StudentDocumentDto>> GetDocumentsByStudentIdAsync(int studentId)
+    {
+        return await _context.Documents
+            .Include(d => d.DocumentType)
+            .Include(d => d.Status)
+            .Where(d => d.StudentId == studentId)
+            .Select(d => new StudentDocumentDto
+            {
+                DocumentId = d.DocumentId,
+                DocumentTypeName = d.DocumentType!.TypeName,
+                StatusName = d.Status!.StatusName,
+                Remarks = d.Remarks,
+                UploadedOn = d.UploadedOn,
+                FileName = d.FileName
+            })
+            .ToListAsync();
+    }
+
+    public async Task<bool> UpdateDocumentStatusAsync(int documentId, int statusId, string? remarks)
+    {
+        var doc = await _context.Documents.FindAsync(documentId);
+        if (doc == null) return false;
+
+        doc.StatusId = statusId;
+        doc.
+            Remarks = remarks;
+        _context.Documents.Update(doc);
+        await _context.SaveChangesAsync();
+
+        return true;
+    }
+}
