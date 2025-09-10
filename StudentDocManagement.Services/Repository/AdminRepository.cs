@@ -51,8 +51,15 @@ public class AdminRepository : IAdminRepository
         if (doc == null) return false;
 
         doc.StatusId = statusId;
-        doc.
-            Remarks = remarks;
+        if (statusId == 3)
+        {
+            doc.Remarks = remarks;
+        }
+
+        if (statusId == 2) 
+        {
+            doc.ApprovedOn = DateTime.UtcNow; 
+        }
         _context.Documents.Update(doc);
         await _context.SaveChangesAsync();
 
