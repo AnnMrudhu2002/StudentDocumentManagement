@@ -14,5 +14,6 @@ namespace StudentDocManagement.Entity.Dto
         public string? Remarks { get; set; }
         public DateTime UploadedOn { get; set; }
         public string FileName { get; set; } = string.Empty;
+        public int DocumentTypeId { get; set; }
     }
 }

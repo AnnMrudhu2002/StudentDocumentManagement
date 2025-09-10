@@ -36,7 +36,6 @@ namespace StudentDocumentManagement.Controllers
             var fileDto = new FileUploadDto
             {
                 FileName = file.FileName,
-                FileSize = file.Length,
                 FileStream = file.OpenReadStream(),
                 DocumentTypeId = documentTypeId,
                 ContentType = file.ContentType,

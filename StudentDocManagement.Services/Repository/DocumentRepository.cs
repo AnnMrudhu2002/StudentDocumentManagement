@@ -129,7 +129,8 @@ namespace StudentDocManagement.Services.Repository
                     StatusName = d.Status.StatusName,          // assumes you have StatusName field
                     Remarks = d.Remarks,
                     UploadedOn = d.UploadedOn,
-                    FileName = d.FileName
+                    FileName = d.FileName,
+                    DocumentTypeId = d.DocumentTypeId
                 })
                 .ToListAsync();
         }

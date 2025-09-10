@@ -31,7 +31,7 @@ public class AdminRepository : IAdminRepository
         return await _context.Documents
             .Include(d => d.DocumentType)
             .Include(d => d.Status)
-            .Where(d => d.StudentId == studentId)
+            .Where(d => d.StudentId == studentId && d.StatusId == 1) // 1 = Pending
             .Select(d => new StudentDocumentDto
             {
                 DocumentId = d.DocumentId,
@@ -43,6 +43,7 @@ public class AdminRepository : IAdminRepository
             })
             .ToListAsync();
     }
+
 
     public async Task<bool> UpdateDocumentStatusAsync(int documentId, int statusId, string? remarks)
     {
