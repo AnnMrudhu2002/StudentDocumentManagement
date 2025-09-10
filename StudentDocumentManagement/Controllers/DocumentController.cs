@@ -50,29 +50,29 @@ namespace StudentDocumentManagement.Controllers
             return Ok(new { message, documentId = document!.DocumentId });
         }
 
-        [HttpGet("GetStudentDocuments")]
-        public async Task<IActionResult> GetStudentDocuments()
-        {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-                return Unauthorized(new { message = "User not found" });
+        //[HttpGet("GetStudentDocuments")]
+        //public async Task<IActionResult> GetStudentDocuments()
+        //{
+        //    var user = await _userManager.GetUserAsync(User);
+        //    if (user == null)
+        //        return Unauthorized(new { message = "User not found" });
 
-            var student = await _repository.GetStudentByUserIdAsync(user.Id);
-            if (student == null)
-                return NotFound(new { message = "Student not found" });
+        //    var student = await _repository.GetStudentByUserIdAsync(user.Id);
+        //    if (student == null)
+        //        return NotFound(new { message = "Student not found" });
 
-            var documents = await _repo.GetStudentDocumentDetails(student.StudentId);
-            return Ok(documents);
-        }
+        //    var documents = await _repo.GetStudentDocumentDetails(student.StudentId);
+        //    return Ok(documents);
+        //}
 
 
 
-        [HttpGet("student/{studentId}")]
-        public async Task<IActionResult> GetByStudentId(int studentId)
-        {
-            var docs = await _repo.GetStudentDocumentsWithDetailsAsync(studentId);
-            return Ok(docs);
-        }
+        //[HttpGet("student/{studentId}")]
+        //public async Task<IActionResult> GetByStudentId(int studentId)
+        //{
+        //    var docs = await _repo.GetStudentDocumentsWithDetailsAsync(studentId);
+        //    return Ok(docs);
+        //}
 
 
         [HttpGet("my-documents")]

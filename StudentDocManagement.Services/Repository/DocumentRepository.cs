@@ -105,7 +105,7 @@ namespace StudentDocManagement.Services.Repository
 
 
 
-
+        //no use
 
         public async Task<Document?> GetByIdAsync(int id)
         {
@@ -116,6 +116,8 @@ namespace StudentDocManagement.Services.Repository
                 .FirstOrDefaultAsync(d => d.DocumentId == id);
         }
 
+
+        //my documents
         public async Task<IEnumerable<StudentDocumentDto>> GetStudentDocumentsWithDetailsAsync(int studentId)
         {
             return await _context.Documents

@@ -141,7 +141,7 @@ namespace StudentDocumentManagement.Controllers
 
             // Check account status 
             if (user.StatusId == 1) // Pending
-                return Unauthorized(new { message = "Account is pending approval" });
+                return Unauthorized(new { message = "You can Login only after Admin approval" });
 
             if (user.StatusId == 3) // Rejected
                 return Unauthorized(new { message = "Your account has been rejected. Please contact the Institution." });
