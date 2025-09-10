@@ -68,11 +68,9 @@ namespace StudentDocManagement.Services.Repository
             if (fileDto.FileSize > maxFileSize)
                 return "File size exceeds the 5 MB limit";
 
-            //var allowedMimeTypes = new[] { "application/pdf", "image/jpeg", "image/png" };
-            //var allowedExtensions = new[] { ".pdf", ".jpg", ".jpeg", ".png" };
-            var allowedMimeTypes = new[] { "application/pdf" };
-            var allowedExtensions = new[] { ".pdf" };
-
+            var allowedMimeTypes = new[] { "application/pdf", "image/jpg", "image/jpeg", "image/png" };
+            var allowedExtensions = new[] { ".pdf", ".jpg", ".jpeg", ".png" };
+   
             if (!allowedMimeTypes.Contains(fileDto.ContentType.ToLower()) &&
                 !allowedExtensions.Contains(Path.GetExtension(fileDto.FileName).ToLower()))
             {
@@ -136,6 +134,23 @@ namespace StudentDocManagement.Services.Repository
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<StudentDocumentDto>> GetStudentDocumentDetails(int studentId)
+        {
+            return await _context.Documents
+                .Include(d => d.DocumentType)
+                .Include(d => d.Status)
+                .Where(d => d.StudentId == studentId && studentId != 3)
+                .Select(d => new StudentDocumentDto
+                {
+                    DocumentId = d.DocumentId,
+                    DocumentTypeName = d.DocumentType.TypeName, // assumes you have TypeName field
+                    StatusName = d.Status.StatusName,          // assumes you have StatusName field
+                    Remarks = d.Remarks,
+                    UploadedOn = d.UploadedOn,
+                    FileName = d.FileName
+                })
+                .ToListAsync();
+        }
 
         public async Task<bool> UpdateStatusAsync(int documentId, int statusId, string? remarks)
         {
