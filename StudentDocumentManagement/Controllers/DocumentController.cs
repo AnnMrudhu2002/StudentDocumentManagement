@@ -38,6 +38,7 @@ namespace StudentDocumentManagement.Controllers
             var fileDto = new FileUploadDto
             {
                 FileName = file.FileName,
+                FileSize = file.Length,
                 FileStream = file.OpenReadStream(),
                 DocumentTypeId = documentTypeId
             };
@@ -50,7 +51,20 @@ namespace StudentDocumentManagement.Controllers
             return Ok(new { message, documentId = document!.DocumentId });
         }
 
+        [HttpGet("GetStudentDocuments")]
+        public async Task<IActionResult> GetStudentDocuments()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+                return Unauthorized(new { message = "User not found" });
 
+            var student = await _repository.GetStudentByUserIdAsync(user.Id);
+            if (student == null)
+                return NotFound(new { message = "Student not found" });
+
+            var documents = await _repo.GetStudentDocumentDetails(student.StudentId);
+            return Ok(documents);
+        }
 
 
 

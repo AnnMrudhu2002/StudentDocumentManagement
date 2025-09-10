@@ -16,6 +16,7 @@ namespace StudentDocManagement.Services.Interface
        FileUploadDto fileDto);
         Task<Document?> GetByIdAsync(int id);
         Task<IEnumerable<StudentDocumentDto>> GetStudentDocumentsWithDetailsAsync(int studentId);
+        Task<IEnumerable<StudentDocumentDto>> GetStudentDocumentDetails(int studentId);
 
         Task<bool> UpdateStatusAsync(int documentId, int statusId, string? remarks);
 
