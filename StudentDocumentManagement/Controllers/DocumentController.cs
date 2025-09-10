@@ -14,11 +14,13 @@ namespace StudentDocumentManagement.Controllers
     {
         private readonly IDocumentRepository _repo;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IStudentProfileRepository _repository;
 
-        public DocumentController(IDocumentRepository repo, UserManager<ApplicationUser> userManager)
+        public DocumentController(IDocumentRepository repo, UserManager<ApplicationUser> userManager, IStudentProfileRepository repository)
         {
             _repo = repo;
             _userManager = userManager;
+            _repository = repository;
         }
 
         [HttpPost("UploadDocument")]
@@ -59,7 +61,7 @@ namespace StudentDocumentManagement.Controllers
             if (user == null)
                 return Unauthorized(new { message = "User not found" });
 
-            var student = await _repo.GetStudentByUserIdAsync(user.Id);
+            var student = await _repository.GetStudentByUserIdAsync(user.Id);
             if (student == null)
                 return NotFound("Student profile not found");
 
