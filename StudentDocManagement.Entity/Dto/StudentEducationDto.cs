@@ -26,4 +26,12 @@ namespace StudentDocManagement.Entity.Dto
         public decimal MarksPercentage { get; set; }
 
     }
+
+
+    public class StudentEducationListDto
+    {
+        [Required]
+        public List<StudentEducationDto> EducationDetails { get; set; } = new();
+    }
+
 }

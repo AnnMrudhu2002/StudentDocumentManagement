@@ -98,52 +98,47 @@ namespace StudentDocManagement.Services.Repository
 
 
 
-        public async Task<StudentEducation?> GetEducationByStudentIdAsync(int studentId)
+        public async Task<List<StudentEducation>> GetEducationByStudentIdAsync(int studentId)
         {
             return await _context.StudentEducations
-                                 .FirstOrDefaultAsync(e => e.StudentId == studentId);
+                                 .Where(e => e.StudentId == studentId)
+                                 .ToListAsync();
         }
 
 
-        public async Task<(bool Success, string Message, StudentEducation? Education)>
-           SubmitEducationAsync(Student student, StudentEducationDto dto)
-        {
-            var existing = await GetEducationByStudentIdAsync(student.StudentId);
 
-           
-            if (student.StatusId == 2) // Approved
-            {
-                return (false, "Profile already approved, cannot edit education details", existing);
-            }
-            else if (student.StatusId == 5) // Under review
-            {
-                return (false, "Profile cannot be edited while under review", existing);
-            }
+        public async Task<(bool Success, string Message, StudentEducation? Education)>
+     SubmitEducationAsync(Student student, StudentEducationDto dto)
+        {
+            // Block editing if profile locked
+            if (student.StatusId == 2)
+                return (false, "Profile already approved, cannot edit education details", null);
+            if (student.StatusId == 5)
+                return (false, "Profile cannot be edited while under review", null);
+
+            var existing = await _context.StudentEducations
+                                         .FirstOrDefaultAsync(e => e.StudentId == student.StudentId &&
+                                                                   e.EducationLevel == dto.EducationLevel);
 
             if (existing == null)
             {
-                // Create new
                 var education = new StudentEducation
                 {
                     StudentId = student.StudentId,
-                    EducationLevel = dto.EducationLevel,
+                    EducationLevel = dto.EducationLevel, // 10th or 12th
                     InstituteName = dto.InstituteName,
                     PassingYear = dto.PassingYear,
                     MarksPercentage = dto.MarksPercentage,
-                    CreatedOn = DateTime.UtcNow,
-                    //DocumentId = 1
+                    CreatedOn = DateTime.UtcNow
                 };
 
                 _context.StudentEducations.Add(education);
                 await _context.SaveChangesAsync();
 
-                return (true, "Education details submitted successfully", education);
+                return (true, $"{dto.EducationLevel} education details submitted successfully", education);
             }
             else
             {
-               
-                // Update
-                existing.EducationLevel = dto.EducationLevel;
                 existing.InstituteName = dto.InstituteName;
                 existing.PassingYear = dto.PassingYear;
                 existing.MarksPercentage = dto.MarksPercentage;
@@ -152,13 +147,14 @@ namespace StudentDocManagement.Services.Repository
                 _context.StudentEducations.Update(existing);
                 await _context.SaveChangesAsync();
 
-                return (true, "Education details updated successfully", existing);
+                return (true, $"{dto.EducationLevel} education details updated successfully", existing);
             }
         }
 
 
 
-    
+
+
 
     }
 }

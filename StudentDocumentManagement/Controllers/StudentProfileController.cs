@@ -67,16 +67,27 @@ namespace StudentDocumentManagement.Controllers
             if (student == null)
                 return NotFound(new { message = "Student profile not found" });
 
-            var education = await _repository.GetEducationByStudentIdAsync(student.StudentId);
-            if (education == null)
+            var educationList = await _repository.GetEducationByStudentIdAsync(student.StudentId);
+
+            if (educationList == null || !educationList.Any())
                 return NotFound(new { message = "Education details not found" });
 
-            return Ok(education);
+            // Map entity → DTO
+            var result = educationList.Select(e => new StudentEducationDto
+            {
+                EducationLevel = e.EducationLevel,   // ensure column exists
+                InstituteName = e.InstituteName,
+                PassingYear = e.PassingYear,
+                MarksPercentage = e.MarksPercentage
+            }).ToList();
+
+            return Ok(result);
         }
 
 
+
         [HttpPost("SubmitEducation")]
-        public async Task<IActionResult> SubmitEducation([FromBody] StudentEducationDto dto)
+        public async Task<IActionResult> SubmitEducation([FromBody] StudentEducationListDto dto)
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
@@ -86,13 +97,14 @@ namespace StudentDocumentManagement.Controllers
             if (student == null)
                 return NotFound(new { message = "Student profile not found" });
 
-            var (success, message, education) = await _repository.SubmitEducationAsync(student, dto);
+            foreach (var edu in dto.EducationDetails)
+            {
+                await _repository.SubmitEducationAsync(student, edu);
+            }
 
-            if (!success)
-                return BadRequest(new { message });
-
-            return Ok(new { message, educationId = education!.EducationId });
+            return Ok(new { message = "Education details saved successfully" });
         }
+
 
 
         [HttpGet("IdProofTypes")]

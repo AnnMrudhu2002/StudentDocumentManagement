@@ -13,7 +13,7 @@ namespace StudentDocManagement.Services.Interface
         Task<Student?> GetStudentByUserIdAsync(string userId);
         Task<(bool Success, string Message, Student? Student)> SubmitProfileAsync(ApplicationUser user, StudentProfileDto dto);
 
-        Task<StudentEducation?> GetEducationByStudentIdAsync(int studentId);
+        Task<List<StudentEducation>> GetEducationByStudentIdAsync(int studentId);
         Task<(bool Success, string Message, StudentEducation? Education)> SubmitEducationAsync(Student student, StudentEducationDto dto);
 
         
