@@ -14,12 +14,14 @@ public class AdminController : ControllerBase
         _adminRepository = adminRepository;
     }
 
+
     [HttpGet("students-for-approval")]
     public async Task<IActionResult> GetStudentsForApproval()
     {
         var students = await _adminRepository.GetStudentsForApprovalAsync();
         return Ok(students);
     }
+
 
     [HttpGet("student/{studentId}/documents")]
     public async Task<IActionResult> GetDocumentsByStudentId(int studentId)
@@ -28,6 +30,7 @@ public class AdminController : ControllerBase
         return Ok(docs);
     }
 
+
     [HttpPost("document/{documentId}/update-status")]
     public async Task<IActionResult> UpdateDocumentStatus(int documentId, [FromQuery] int statusId, [FromQuery] string? remarks)
     {
@@ -35,4 +38,5 @@ public class AdminController : ControllerBase
         if (!success) return NotFound("Document not found");
         return Ok(new { message = "Status updated successfully" });
     }
+
 }

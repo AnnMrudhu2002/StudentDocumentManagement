@@ -157,7 +157,6 @@ namespace StudentDocumentManagement.Controllers
                 Token = token,
             
             };
-
             return Ok(userInfo);
 
         }

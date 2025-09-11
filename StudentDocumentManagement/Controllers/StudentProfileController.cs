@@ -40,7 +40,6 @@ namespace StudentDocumentManagement.Controllers
             return Ok(student);
         }
 
-
         [HttpPost("SubmitProfile")]
         public async Task<IActionResult> SubmitProfile([FromBody] StudentProfileDto dto)
         {
@@ -84,8 +83,6 @@ namespace StudentDocumentManagement.Controllers
             return Ok(result);
         }
 
-
-
         [HttpPost("SubmitEducation")]
         public async Task<IActionResult> SubmitEducation([FromBody] StudentEducationListDto dto)
         {
@@ -105,8 +102,6 @@ namespace StudentDocumentManagement.Controllers
             return Ok(new { message = "Education details saved successfully" });
         }
 
-
-
         [HttpGet("IdProofTypes")]
         public async Task<IActionResult> GetIdProofTypes()
         {
@@ -124,19 +119,19 @@ namespace StudentDocumentManagement.Controllers
                                      .ToListAsync();
             return Ok(list);
         }
+
         [HttpGet("States")]
         public async Task<IActionResult> GetStates()
         {
             // Hardcoded list of Indian states
             var states = new List<string> {
-        "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
-        "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand",
-        "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur",
-        "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab",
-        "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura",
-        "Uttar Pradesh", "Uttarakhand", "West Bengal"
-    };
-
+                      "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
+                      "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand",
+                      "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur",
+                      "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab",
+                      "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura",
+                      "Uttar Pradesh", "Uttarakhand", "West Bengal"
+            };
             return Ok(states);
         }
 

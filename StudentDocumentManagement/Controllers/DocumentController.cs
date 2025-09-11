@@ -12,22 +12,22 @@ namespace StudentDocumentManagement.Controllers
     [ApiController]
     public class DocumentController : ControllerBase
     {
-        private readonly IDocumentRepository _repo;
+        private readonly IDocumentRepository _documentRepository;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IStudentProfileRepository _repository;
+        private readonly IStudentProfileRepository _studentProfileRepository;
 
-        public DocumentController(IDocumentRepository repo, UserManager<ApplicationUser> userManager, IStudentProfileRepository repository)
+        public DocumentController(IDocumentRepository documentRepository, UserManager<ApplicationUser> userManager, IStudentProfileRepository studentProfileRepository)
         {
-            _repo = repo;
+            _documentRepository = documentRepository;
             _userManager = userManager;
-            _repository = repository;
+            _studentProfileRepository = studentProfileRepository;
         }
 
         [HttpPost("UploadDocument")]
         [Consumes("multipart/form-data")]
         public async Task<IActionResult> UploadDocument(IFormFile file, [FromForm] int documentTypeId)
         {
-          
+
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
                 return Unauthorized(new { message = "User not found" });
@@ -41,7 +41,7 @@ namespace StudentDocumentManagement.Controllers
                 FileSize = file.Length
             };
 
-            var (success, message, document) = await _repo.UploadDocumentAsync(user, fileDto);
+            var (success, message, document) = await _documentRepository.UploadDocumentAsync(user, fileDto);
 
             if (!success)
                 return BadRequest(new { message });
@@ -56,14 +56,13 @@ namespace StudentDocumentManagement.Controllers
             if (user == null)
                 return Unauthorized(new { message = "User not found" });
 
-            var student = await _repository.GetStudentByUserIdAsync(user.Id);
+            var student = await _studentProfileRepository.GetStudentByUserIdAsync(user.Id);
             if (student == null)
                 return NotFound(new { message = "Student not found" });
 
-            var documents = await _repo.GetStudentDocumentDetails(student.StudentId);
+            var documents = await _documentRepository.GetStudentDocumentDetails(student.StudentId);
             return Ok(documents);
         }
-
 
 
         [HttpGet("my-documents")]
@@ -73,24 +72,20 @@ namespace StudentDocumentManagement.Controllers
             if (user == null)
                 return Unauthorized(new { message = "User not found" });
 
-            var student = await _repository.GetStudentByUserIdAsync(user.Id);
+            var student = await _studentProfileRepository.GetStudentByUserIdAsync(user.Id);
             if (student == null)
                 return NotFound("Student profile not found");
 
-            var docs = await _repo.GetStudentDocumentsWithDetailsAsync(student.StudentId);
+            var docs = await _documentRepository.GetStudentDocumentsWithDetailsAsync(student.StudentId);
             return Ok(docs);
         }
-
-
-       
-
 
 
         [HttpGet("download/{documentId}")]
         public async Task<IActionResult> DownloadDocument(int documentId)
         {
             // Use repository to get document by ID
-            var doc = await _repo.GetByIdAsync(documentId);
+            var doc = await _documentRepository.GetByIdAsync(documentId);
             if (doc == null || !System.IO.File.Exists(doc.FilePath))
                 return NotFound("File not found.");
 
@@ -98,5 +93,7 @@ namespace StudentDocumentManagement.Controllers
             var contentType = "application/octet-stream"; // You can use MimeMapping if needed
             return File(fileBytes, contentType, doc.FileName);
         }
+
+     
     }
 }
