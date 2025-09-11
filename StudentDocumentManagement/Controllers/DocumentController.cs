@@ -25,8 +25,7 @@ namespace StudentDocumentManagement.Controllers
 
         [HttpPost("UploadDocument")]
         [Consumes("multipart/form-data")]
-        public async Task<IActionResult> UploadDocument(IFormFile file,
-                                                 [FromForm] int documentTypeId)
+        public async Task<IActionResult> UploadDocument(IFormFile file, [FromForm] int documentTypeId)
         {
           
             var user = await _userManager.GetUserAsync(User);
@@ -50,29 +49,21 @@ namespace StudentDocumentManagement.Controllers
             return Ok(new { message, documentId = document!.DocumentId });
         }
 
-        //[HttpGet("GetStudentDocuments")]
-        //public async Task<IActionResult> GetStudentDocuments()
-        //{
-        //    var user = await _userManager.GetUserAsync(User);
-        //    if (user == null)
-        //        return Unauthorized(new { message = "User not found" });
+        [HttpGet("GetStudentDocuments")]
+        public async Task<IActionResult> GetStudentDocuments()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+                return Unauthorized(new { message = "User not found" });
 
-        //    var student = await _repository.GetStudentByUserIdAsync(user.Id);
-        //    if (student == null)
-        //        return NotFound(new { message = "Student not found" });
+            var student = await _repository.GetStudentByUserIdAsync(user.Id);
+            if (student == null)
+                return NotFound(new { message = "Student not found" });
 
-        //    var documents = await _repo.GetStudentDocumentDetails(student.StudentId);
-        //    return Ok(documents);
-        //}
+            var documents = await _repo.GetStudentDocumentDetails(student.StudentId);
+            return Ok(documents);
+        }
 
-
-
-        //[HttpGet("student/{studentId}")]
-        //public async Task<IActionResult> GetByStudentId(int studentId)
-        //{
-        //    var docs = await _repo.GetStudentDocumentsWithDetailsAsync(studentId);
-        //    return Ok(docs);
-        //}
 
 
         [HttpGet("my-documents")]
@@ -91,28 +82,7 @@ namespace StudentDocumentManagement.Controllers
         }
 
 
-        [HttpPut("status/{documentId}")]
-        public async Task<IActionResult> UpdateStatus(int documentId, [FromQuery] int statusId, [FromQuery] string? remarks)
-        {
-            var updated = await _repo.UpdateStatusAsync(documentId, statusId, remarks);
-            if (!updated) return NotFound();
-
-            return Ok(new { message = "Document status updated" });
-        }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+       
 
 
 
@@ -128,72 +98,5 @@ namespace StudentDocumentManagement.Controllers
             var contentType = "application/octet-stream"; // You can use MimeMapping if needed
             return File(fileBytes, contentType, doc.FileName);
         }
-
-        [HttpPost("reupload/{documentId}")]
-        public async Task<IActionResult> ReUploadDocument(int documentId, IFormFile file)
-        {
-            if (file == null || file.Length == 0)
-                return BadRequest("No file uploaded.");
-
-            // Get existing document
-            var existingDoc = await _repo.GetByIdAsync(documentId);
-            if (existingDoc == null)
-                return NotFound("Document not found.");
-
-            // Save new file to server
-            var storagePath = Path.Combine(Directory.GetCurrentDirectory(), "FileStorage");
-            if (!Directory.Exists(storagePath))
-                Directory.CreateDirectory(storagePath);
-
-            var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-            var filePath = Path.Combine(storagePath, uniqueFileName);
-
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await file.CopyToAsync(stream);
-            }
-
-            // Update document fields
-            existingDoc.FileName = uniqueFileName;
-            existingDoc.FilePath = filePath;
-            existingDoc.StatusId = 1; // Reset to Pending
-            existingDoc.Remarks = null;
-            existingDoc.UploadedOn = DateTime.UtcNow;
-
-            // Update in repository
-            var updated = await _repo.UpdateStatusAsync(existingDoc.DocumentId, existingDoc.StatusId, existingDoc.Remarks);
-            if (!updated)
-                return BadRequest("Failed to update document.");
-
-            return Ok(new { message = "File re-uploaded successfully" });
-        }
-
-
-
-        [HttpGet("{id}/view")]
-        public async Task<IActionResult> ViewDocument(int id)
-        {
-            var doc = await _repo.GetByIdAsync(id);
-            if (doc == null || string.IsNullOrEmpty(doc.FilePath) || !System.IO.File.Exists(doc.FilePath))
-                return NotFound("Document not found");
-
-            var fileBytes = await System.IO.File.ReadAllBytesAsync(doc.FilePath);
-            var ext = Path.GetExtension(doc.FileName).ToLowerInvariant();
-
-            var contentType = ext switch
-            {
-                ".pdf" => "application/pdf",
-                ".jpg" or ".jpeg" => "image/jpeg",
-                ".png" => "image/png",
-                ".doc" or ".docx" => "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                ".xls" or ".xlsx" => "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                _ => "application/octet-stream"
-            };
-
-            // returning without filename → lets browser show inline
-            return File(fileBytes, contentType);
-        }
-
-
     }
 }

@@ -69,7 +69,7 @@ namespace StudentDocumentManagement.Controllers
 
             var educationList = await _repository.GetEducationByStudentIdAsync(student.StudentId);
 
-            if (educationList == null || !educationList.Any())
+            if (educationList == null || educationList.Count == 0)
                 return NotFound(new { message = "Education details not found" });
 
             // Map entity → DTO
@@ -124,5 +124,21 @@ namespace StudentDocumentManagement.Controllers
                                      .ToListAsync();
             return Ok(list);
         }
+        [HttpGet("States")]
+        public async Task<IActionResult> GetStates()
+        {
+            // Hardcoded list of Indian states
+            var states = new List<string> {
+        "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
+        "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand",
+        "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur",
+        "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab",
+        "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura",
+        "Uttar Pradesh", "Uttarakhand", "West Bengal"
+    };
+
+            return Ok(states);
+        }
+
     }
 }

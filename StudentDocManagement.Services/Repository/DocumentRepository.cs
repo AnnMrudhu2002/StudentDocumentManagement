@@ -103,10 +103,7 @@ namespace StudentDocManagement.Services.Repository
         }
 
 
-
-
-        //no use
-
+        //download
         public async Task<Document?> GetByIdAsync(int id)
         {
             return await _context.Documents
@@ -137,6 +134,8 @@ namespace StudentDocManagement.Services.Repository
                 .ToListAsync();
         }
 
+
+        //list uploaded files
         public async Task<IEnumerable<StudentDocumentDto>> GetStudentDocumentDetails(int studentId)
         {
             return await _context.Documents
@@ -155,19 +154,5 @@ namespace StudentDocManagement.Services.Repository
                 .ToListAsync();
         }
 
-        public async Task<bool> UpdateStatusAsync(int documentId, int statusId, string? remarks)
-        {
-            var doc = await _context.Documents.FindAsync(documentId);
-            if (doc == null) return false;
-
-            doc.StatusId = statusId;
-            doc.Remarks = remarks;
-            if (statusId == 2) // Example: 2 = Approved
-                doc.ApprovedOn = DateTime.UtcNow;
-
-            _context.Documents.Update(doc);
-            await _context.SaveChangesAsync();
-            return true;
-        }
     }
 }

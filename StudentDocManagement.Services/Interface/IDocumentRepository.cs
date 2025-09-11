@@ -16,7 +16,7 @@ namespace StudentDocManagement.Services.Interface
         Task<IEnumerable<StudentDocumentDto>> GetStudentDocumentsWithDetailsAsync(int studentId);
         Task<IEnumerable<StudentDocumentDto>> GetStudentDocumentDetails(int studentId);
 
-        Task<bool> UpdateStatusAsync(int documentId, int statusId, string? remarks);
+        //Task<bool> UpdateStatusAsync(int documentId, int statusId, string? remarks);
 
     }
 }

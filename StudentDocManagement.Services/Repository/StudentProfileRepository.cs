@@ -54,7 +54,7 @@ namespace StudentDocManagement.Services.Repository
                     CreatedOn = DateTime.UtcNow
                 };
 
-                _context.Students.Add(student);
+                await _context.Students.AddAsync(student);
                 await _context.SaveChangesAsync();
 
                 return (true, "Profile submitted successfully", student);
