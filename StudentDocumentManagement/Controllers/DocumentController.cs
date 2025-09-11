@@ -60,7 +60,7 @@ namespace StudentDocumentManagement.Controllers
             if (student == null)
                 return NotFound(new { message = "Student not found" });
 
-            var documents = await _documentRepository.GetStudentDocumentDetails(student.StudentId);
+            var documents = await _documentRepository.GetStudentDocumentsWithDetailsAsync(student.StudentId);
             return Ok(documents);
         }
 

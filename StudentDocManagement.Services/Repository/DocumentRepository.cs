@@ -135,24 +135,24 @@ namespace StudentDocManagement.Services.Repository
         }
 
 
-        //list uploaded files
-        public async Task<IEnumerable<StudentDocumentDto>> GetStudentDocumentDetails(int studentId)
-        {
-            return await _context.Documents
-                .Include(d => d.DocumentType)
-                .Include(d => d.Status)
-                .Where(d => d.StudentId == studentId && studentId != 3)
-                .Select(d => new StudentDocumentDto
-                {
-                    DocumentId = d.DocumentId,
-                    DocumentTypeName = d.DocumentType.TypeName, // assumes you have TypeName field
-                    StatusName = d.Status.StatusName,          // assumes you have StatusName field
-                    Remarks = d.Remarks,
-                    UploadedOn = d.UploadedOn,
-                    FileName = d.FileName
-                })
-                .ToListAsync();
-        }
+        ////list uploaded files
+        //public async Task<IEnumerable<StudentDocumentDto>> GetStudentDocumentDetails(int studentId)
+        //{
+        //    return await _context.Documents
+        //        .Include(d => d.DocumentType)
+        //        .Include(d => d.Status)
+        //        .Where(d => d.StudentId == studentId && studentId != 3)
+        //        .Select(d => new StudentDocumentDto
+        //        {
+        //            DocumentId = d.DocumentId,
+        //            DocumentTypeName = d.DocumentType.TypeName, // assumes you have TypeName field
+        //            StatusName = d.Status.StatusName,          // assumes you have StatusName field
+        //            Remarks = d.Remarks,
+        //            UploadedOn = d.UploadedOn,
+        //            FileName = d.FileName
+        //        })
+        //        .ToListAsync();
+        //}
 
     }
 }
