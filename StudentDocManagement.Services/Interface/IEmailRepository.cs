@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace StudentDocManagement.Services.Interface
 {
-    public interface IEmailService
+    public interface IEmailRepository
     {
         Task SendEmailAsync(string toEmail, string subject, string body);
     }
