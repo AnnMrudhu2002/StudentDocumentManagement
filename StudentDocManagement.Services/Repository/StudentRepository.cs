@@ -16,11 +16,13 @@ namespace StudentDocManagement.Services.Repository
     {
         private readonly AppDbContext _context;
         private readonly IEmailService _emailService;
+        private readonly IEmailTemplateRepository _emailTemplateRepository;
 
-        public StudentRepository(AppDbContext context, IEmailService emailService)
+        public StudentRepository(AppDbContext context, IEmailService emailService, IEmailTemplateRepository emailTemplateRepository)
         {
             _context = context;
             _emailService = emailService;
+            _emailTemplateRepository = emailTemplateRepository;
         }
 
 
@@ -47,80 +49,44 @@ namespace StudentDocManagement.Services.Repository
 
 
 
-        public async Task<(bool Success, string Message)> UpdateStudentStatusAsync(string userId, int statusId)
+       public async Task<(bool Success, string Message)> UpdateStudentStatusAsync(string userId, int statusId)
+    {
+        var student = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+        if (student == null)
+            return (false, "Student not found");
+
+        if (student.StatusId != 1) // pending check
+            return (false, "Student status is already updated");
+
+        student.StatusId = statusId;
+        await _context.SaveChangesAsync();
+
+        try
         {
-            var student = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
-            if (student == null)
-                return (false, "Student not found");
+            string subject;
+            string body;
 
-            // Check if status is still pending
-            if (student.StatusId != 1) // 1 = Pending
-                return (false, "Student status is already updated");
-
-
-            student.StatusId = statusId;
-            await _context.SaveChangesAsync();
-
-            try
+            if (statusId == 2) // Approved
             {
-                // Send email via EmailService
-                var subject = statusId == 2
-                ? "Registration Approved - Student Document Management System"
-                : "Registration Rejected - Student Document Management System";
-
-                var body = statusId == 2
-                    ? $@"
-                <p>Dear <b>{student.FullName}</b>,</p>
-                <p>We are pleased to inform you that your registration with the 
-                <b>Student Document Management System</b> has been <span style='color:green;font-weight:bold;'>approved</span>.</p>
-        
-                <p><u>Registration Details:</u></p>
-                <ul>
-                    <li><b>Full Name:</b> {student.FullName}</li>
-                    <li><b>Email:</b> {student.Email}</li>
-                    <li><b>Register Number:</b> {student.RegisterNo}</li>
-                </ul>
-
-                <p>You can now log in to the system and access your dashboard.</p>
-        
-                <br/>
-                <p>Best Regards,<br/>
-                <b>Admin Team</b><br/>
-                Student Document Management System</p>
-    "
-                    : $@"
-                <p>Dear <b>{student.FullName}</b>,</p>
-                <p>We regret to inform you that your registration with the 
-                <b>Student Document Management System</b> has been <span style='color:red;font-weight:bold;'>rejected</span>.</p>
-        
-                <p><u>Registration Details:</u></p>
-                <ul>
-                    <li><b>Full Name:</b> {student.FullName}</li>
-                    <li><b>Email:</b> {student.Email}</li>
-                    <li><b>Register Number:</b> {student.RegisterNo}</li>
-                </ul>
-
-                <p>If you believe this decision was made in error or wish to reapply, 
-                kindly contact the administration office for further clarification.</p>
-        
-                <br/>
-                <p>Best Regards,<br/>
-                <b>Admin Team</b><br/>
-                Student Document Management System</p>
-                ";
-
-
-                await _emailService.SendEmailAsync(student.Email, subject, body);
+                subject = "Registration Approved - Student Document Management System";
+                body = _emailTemplateRepository.GetApprovalTemplate(student.FullName, student.Email, student.RegisterNo);
+            }
+            else // Rejected
+            {
+                subject = "Registration Rejected - Student Document Management System";
+                body = _emailTemplateRepository.GetRejectionTemplate(student.FullName, student.Email, student.RegisterNo);
             }
 
-            catch (Exception ex)
-            {
-                // Log error but do NOT fail the status update
-                Console.WriteLine("Email sending failed: " + ex.Message);
-            }
-
-            return (true, statusId == 2 ? "Student approved" : "Student rejected");
+            await _emailService.SendEmailAsync(student.Email, subject, body);
         }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Email sending failed: " + ex.Message);
+        }
+
+        return (true, statusId == 2 ? "Student approved" : "Student rejected");
+    }
+
     }
 }
 
