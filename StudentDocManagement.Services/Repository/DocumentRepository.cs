@@ -1,6 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using StudentDocManagement.Entity.Dto;
 using StudentDocManagement.Entity.Models;
+using StudentDocManagement.Entity.Models;
+using StudentDocManagement.Services.Interface;
 using StudentDocManagement.Services.Interface;
 using System;
 using System.Collections.Generic;
@@ -8,9 +12,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using StudentDocManagement.Entity.Models;
-using StudentDocManagement.Services.Interface;
 
 namespace StudentDocManagement.Services.Repository
 {
@@ -18,11 +19,13 @@ namespace StudentDocManagement.Services.Repository
     {
         private readonly AppDbContext _context;
         private readonly IStudentProfileRepository _studentProfileRepository;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public DocumentRepository(AppDbContext context, IStudentProfileRepository studentProfileRepository)
+        public DocumentRepository(AppDbContext context, IStudentProfileRepository studentProfileRepository, UserManager<ApplicationUser> userManager)
         {
             _context = context;
             _studentProfileRepository = studentProfileRepository;
+            _userManager = userManager;
         }
 
         public async Task<(bool Success, string Message, Document? Document)> UploadDocumentAsync(ApplicationUser user, FileUploadDto fileDto)
@@ -135,24 +138,50 @@ namespace StudentDocManagement.Services.Repository
         }
 
 
-        //list uploaded files
-        public async Task<IEnumerable<StudentDocumentDto>> GetStudentDocumentDetails(int studentId)
+        public async Task<(byte[] FileBytes, string FileName)?> GetDocumentForDownloadAsync(
+           int documentId, ApplicationUser user)
         {
-            return await _context.Documents
-                .Include(d => d.DocumentType)
-                .Include(d => d.Status)
-                .Where(d => d.StudentId == studentId && studentId != 3)
-                .Select(d => new StudentDocumentDto
-                {
-                    DocumentId = d.DocumentId,
-                    DocumentTypeName = d.DocumentType.TypeName, // assumes you have TypeName field
-                    StatusName = d.Status.StatusName,          // assumes you have StatusName field
-                    Remarks = d.Remarks,
-                    UploadedOn = d.UploadedOn,
-                    FileName = d.FileName
-                })
-                .ToListAsync();
-        }
+            var doc = await GetByIdAsync(documentId);
+            if (doc == null || !File.Exists(doc.FilePath))
+                return null;
 
+            // Admin can download any document
+            if (await _userManager.IsInRoleAsync(user, "Admin"))
+            {
+                var bytes = await File.ReadAllBytesAsync(doc.FilePath);
+                return (bytes, doc.FileName);
+            }
+
+            // Check if student owns the document
+            var student = await _studentProfileRepository.GetStudentByUserIdAsync(user.Id);
+            if (student == null || doc.StudentId != student.StudentId)
+                return null;
+
+            var fileBytes = await File.ReadAllBytesAsync(doc.FilePath);
+            return (fileBytes, doc.FileName);
+        }
     }
+
+
+
+    ////list uploaded files
+    //public async Task<IEnumerable<StudentDocumentDto>> GetStudentDocumentDetails(int studentId)
+    //{
+    //    return await _context.Documents
+    //        .Include(d => d.DocumentType)
+    //        .Include(d => d.Status)
+    //        .Where(d => d.StudentId == studentId && studentId != 3)
+    //        .Select(d => new StudentDocumentDto
+    //        {
+    //            DocumentId = d.DocumentId,
+    //            DocumentTypeName = d.DocumentType.TypeName, // assumes you have TypeName field
+    //            StatusName = d.Status.StatusName,          // assumes you have StatusName field
+    //            Remarks = d.Remarks,
+    //            UploadedOn = d.UploadedOn,
+    //            FileName = d.FileName
+    //        })
+    //        .ToListAsync();
+    //}
+
+//}
 }

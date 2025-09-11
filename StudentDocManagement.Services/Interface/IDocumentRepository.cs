@@ -14,7 +14,9 @@ namespace StudentDocManagement.Services.Interface
         Task<(bool Success, string Message, Document? Document)> UploadDocumentAsync(ApplicationUser user, FileUploadDto fileDto);
         Task<Document?> GetByIdAsync(int id);
         Task<IEnumerable<StudentDocumentDto>> GetStudentDocumentsWithDetailsAsync(int studentId);
-        Task<IEnumerable<StudentDocumentDto>> GetStudentDocumentDetails(int studentId);
+
+        Task<(byte[] FileBytes, string FileName)?> GetDocumentForDownloadAsync(int documentId, ApplicationUser user);
+        //Task<IEnumerable<StudentDocumentDto>> GetStudentDocumentDetails(int studentId);
 
     }
 }
