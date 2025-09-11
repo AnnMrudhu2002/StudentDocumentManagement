@@ -50,42 +50,42 @@ namespace StudentDocManagement.Services.Repository
 
 
        public async Task<(bool Success, string Message)> UpdateStudentStatusAsync(string userId, int statusId)
-    {
-        var student = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
-        if (student == null)
-            return (false, "Student not found");
+       {
+             var student = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+             if (student == null)
+                  return (false, "Student not found");
 
-        if (student.StatusId != 1) // pending check
-            return (false, "Student status is already updated");
+             if (student.StatusId != 1) // pending check
+                  return (false, "Student status is already updated");
 
-        student.StatusId = statusId;
-        await _context.SaveChangesAsync();
+                  student.StatusId = statusId;
+             await _context.SaveChangesAsync();
 
-        try
-        {
-            string subject;
-            string body;
+             try
+             {
+                     string subject;
+                     string body;
 
-            if (statusId == 2) // Approved
-            {
-                subject = "Registration Approved - Student Document Management System";
-                body = _emailTemplateRepository.GetApprovalTemplate(student.FullName, student.Email, student.RegisterNo);
-            }
-            else // Rejected
-            {
-                subject = "Registration Rejected - Student Document Management System";
-                body = _emailTemplateRepository.GetRejectionTemplate(student.FullName, student.Email, student.RegisterNo);
-            }
+                    if (statusId == 2) // Approved
+                    {
+                            subject = "Registration Approved - Student Document Management System";
+                            body = _emailTemplateRepository.GetApprovalTemplate(student.FullName, student.Email, student.RegisterNo);
+                    }
+                    else // Rejected
+                    {
+                             subject = "Registration Rejected - Student Document Management System";
+                             body = _emailTemplateRepository.GetRejectionTemplate(student.FullName, student.Email, student.RegisterNo);
+                    }
 
-            await _emailRepository.SendEmailAsync(student.Email, subject, body);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine("Email sending failed: " + ex.Message);
-        }
+                      await _emailRepository.SendEmailAsync(student.Email, subject, body);
+             }
+             catch (Exception ex)
+             {
+                      Console.WriteLine("Email sending failed: " + ex.Message);
+             }
 
-        return (true, statusId == 2 ? "Student approved" : "Student rejected");
-    }
+              return (true, statusId == 2 ? "Student approved" : "Student rejected");
+       }
 
     }
 }
