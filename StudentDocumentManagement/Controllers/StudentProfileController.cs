@@ -15,13 +15,13 @@ namespace StudentDocumentManagement.Controllers
     [Authorize(Roles = "Student")]
     public class StudentProfileController : ControllerBase
     {
-        private readonly IStudentProfileRepository _repository;
+        private readonly IStudentProfileRepository _studentProfileRepository;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly AppDbContext _context;
 
-        public StudentProfileController(IStudentProfileRepository repository, UserManager<ApplicationUser> userManager, AppDbContext context)
+        public StudentProfileController(IStudentProfileRepository studentProfileRepository, UserManager<ApplicationUser> userManager, AppDbContext context)
         {
-            _repository = repository;
+            _studentProfileRepository = studentProfileRepository;
             _userManager = userManager;
             _context = context;
         }
@@ -33,7 +33,7 @@ namespace StudentDocumentManagement.Controllers
             if (user == null)
                 return Unauthorized(new { message = "User not found" });
 
-            var student = await _repository.GetStudentByUserIdAsync(user.Id);
+            var student = await _studentProfileRepository.GetStudentByUserIdAsync(user.Id);
             if (student == null)
                 return NotFound(new { message = "Profile not found" });
 
@@ -48,7 +48,7 @@ namespace StudentDocumentManagement.Controllers
             if (user == null)
                 return Unauthorized(new { message = "User not found" });
 
-            var (success, message, student) = await _repository.SubmitProfileAsync(user, dto);
+            var (success, message, student) = await _studentProfileRepository.SubmitProfileAsync(user, dto);
 
             if (!success)
                 return BadRequest(new { message });
@@ -63,11 +63,11 @@ namespace StudentDocumentManagement.Controllers
             if (user == null)
                 return Unauthorized(new { message = "User not found" });
 
-            var student = await _repository.GetStudentByUserIdAsync(user.Id);
+            var student = await _studentProfileRepository.GetStudentByUserIdAsync(user.Id);
             if (student == null)
                 return NotFound(new { message = "Student profile not found" });
 
-            var educationList = await _repository.GetEducationByStudentIdAsync(student.StudentId);
+            var educationList = await _studentProfileRepository.GetEducationByStudentIdAsync(student.StudentId);
 
             if (educationList == null || !educationList.Any())
                 return NotFound(new { message = "Education details not found" });
@@ -93,13 +93,13 @@ namespace StudentDocumentManagement.Controllers
             if (user == null)
                 return Unauthorized(new { message = "User not found" });
 
-            var student = await _repository.GetStudentByUserIdAsync(user.Id);
+            var student = await _studentProfileRepository.GetStudentByUserIdAsync(user.Id);
             if (student == null)
                 return NotFound(new { message = "Student profile not found" });
 
             foreach (var edu in dto.EducationDetails)
             {
-                await _repository.SubmitEducationAsync(student, edu);
+                await _studentProfileRepository.SubmitEducationAsync(student, edu);
             }
 
             return Ok(new { message = "Education details saved successfully" });

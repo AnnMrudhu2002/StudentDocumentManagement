@@ -12,15 +12,15 @@ namespace StudentDocumentManagement.Controllers
     [ApiController]
     public class DocumentController : ControllerBase
     {
-        private readonly IDocumentRepository _repo;
+        private readonly IDocumentRepository _documentRepository;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IStudentProfileRepository _repository;
+        private readonly IStudentProfileRepository _studentProfileRepository;
 
-        public DocumentController(IDocumentRepository repo, UserManager<ApplicationUser> userManager, IStudentProfileRepository repository)
+        public DocumentController(IDocumentRepository documentRepository, UserManager<ApplicationUser> userManager, IStudentProfileRepository studentProfileRepository)
         {
-            _repo = repo;
+            _documentRepository = documentRepository;
             _userManager = userManager;
-            _repository = repository;
+            _studentProfileRepository = studentProfileRepository;
         }
 
         [HttpPost("UploadDocument")]
@@ -42,7 +42,7 @@ namespace StudentDocumentManagement.Controllers
                 FileSize = file.Length
             };
 
-            var (success, message, document) = await _repo.UploadDocumentAsync(user, fileDto);
+            var (success, message, document) = await _documentRepository.UploadDocumentAsync(user, fileDto);
 
             if (!success)
                 return BadRequest(new { message });
@@ -57,11 +57,11 @@ namespace StudentDocumentManagement.Controllers
             if (user == null)
                 return Unauthorized(new { message = "User not found" });
 
-            var student = await _repository.GetStudentByUserIdAsync(user.Id);
+            var student = await _studentProfileRepository.GetStudentByUserIdAsync(user.Id);
             if (student == null)
                 return NotFound(new { message = "Student not found" });
 
-            var documents = await _repo.GetStudentDocumentDetails(student.StudentId);
+            var documents = await _documentRepository.GetStudentDocumentDetails(student.StudentId);
             return Ok(documents);
         }
 
@@ -70,7 +70,7 @@ namespace StudentDocumentManagement.Controllers
         [HttpGet("student/{studentId}")]
         public async Task<IActionResult> GetByStudentId(int studentId)
         {
-            var docs = await _repo.GetStudentDocumentsWithDetailsAsync(studentId);
+            var docs = await _documentRepository.GetStudentDocumentsWithDetailsAsync(studentId);
             return Ok(docs);
         }
 
@@ -82,11 +82,11 @@ namespace StudentDocumentManagement.Controllers
             if (user == null)
                 return Unauthorized(new { message = "User not found" });
 
-            var student = await _repository.GetStudentByUserIdAsync(user.Id);
+            var student = await _studentProfileRepository.GetStudentByUserIdAsync(user.Id);
             if (student == null)
                 return NotFound("Student profile not found");
 
-            var docs = await _repo.GetStudentDocumentsWithDetailsAsync(student.StudentId);
+            var docs = await _documentRepository.GetStudentDocumentsWithDetailsAsync(student.StudentId);
             return Ok(docs);
         }
 
@@ -94,33 +94,18 @@ namespace StudentDocumentManagement.Controllers
         [HttpPut("status/{documentId}")]
         public async Task<IActionResult> UpdateStatus(int documentId, [FromQuery] int statusId, [FromQuery] string? remarks)
         {
-            var updated = await _repo.UpdateStatusAsync(documentId, statusId, remarks);
+            var updated = await _documentRepository.UpdateStatusAsync(documentId, statusId, remarks);
             if (!updated) return NotFound();
 
             return Ok(new { message = "Document status updated" });
         }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         [HttpGet("download/{documentId}")]
         public async Task<IActionResult> DownloadDocument(int documentId)
         {
             // Use repository to get document by ID
-            var doc = await _repo.GetByIdAsync(documentId);
+            var doc = await _documentRepository.GetByIdAsync(documentId);
             if (doc == null || !System.IO.File.Exists(doc.FilePath))
                 return NotFound("File not found.");
 
@@ -136,7 +121,7 @@ namespace StudentDocumentManagement.Controllers
                 return BadRequest("No file uploaded.");
 
             // Get existing document
-            var existingDoc = await _repo.GetByIdAsync(documentId);
+            var existingDoc = await _documentRepository.GetByIdAsync(documentId);
             if (existingDoc == null)
                 return NotFound("Document not found.");
 
@@ -161,7 +146,7 @@ namespace StudentDocumentManagement.Controllers
             existingDoc.UploadedOn = DateTime.UtcNow;
 
             // Update in repository
-            var updated = await _repo.UpdateStatusAsync(existingDoc.DocumentId, existingDoc.StatusId, existingDoc.Remarks);
+            var updated = await _documentRepository.UpdateStatusAsync(existingDoc.DocumentId, existingDoc.StatusId, existingDoc.Remarks);
             if (!updated)
                 return BadRequest("Failed to update document.");
 
@@ -173,7 +158,7 @@ namespace StudentDocumentManagement.Controllers
         [HttpGet("{id}/view")]
         public async Task<IActionResult> ViewDocument(int id)
         {
-            var doc = await _repo.GetByIdAsync(id);
+            var doc = await _documentRepository.GetByIdAsync(id);
             if (doc == null || string.IsNullOrEmpty(doc.FilePath) || !System.IO.File.Exists(doc.FilePath))
                 return NotFound("Document not found");
 

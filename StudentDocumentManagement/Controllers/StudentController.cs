@@ -12,17 +12,17 @@ namespace StudentDocumentManagement.Controllers
     [Authorize(Roles = "Admin")]
     public class StudentController : ControllerBase
     {
-        private readonly IStudentRepository _repository;
+        private readonly IStudentRepository _studentRepository;
 
-        public StudentController(IStudentRepository repository)
+        public StudentController(IStudentRepository studentRepository)
         {
-            _repository = repository;
+            _studentRepository = studentRepository;
         }
 
         [HttpGet("GetPendingStudents")]
         public async Task<IActionResult> GetPendingStudents()
         {
-            var (message, students) = await _repository.GetPendingStudentsAsync();
+            var (message, students) = await _studentRepository.GetPendingStudentsAsync();
 
             return Ok(new { message, students });
         }
@@ -48,7 +48,7 @@ namespace StudentDocumentManagement.Controllers
         {
             int statusId = dto.IsApproved ? 2 : 3;
 
-            var (success, message) = await _repository.UpdateStudentStatusAsync(dto.UserId, statusId);
+            var (success, message) = await _studentRepository.UpdateStudentStatusAsync(dto.UserId, statusId);
 
             return Ok(new { success, message });
         }

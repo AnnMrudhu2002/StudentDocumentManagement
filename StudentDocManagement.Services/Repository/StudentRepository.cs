@@ -15,13 +15,13 @@ namespace StudentDocManagement.Services.Repository
     public class StudentRepository: IStudentRepository
     {
         private readonly AppDbContext _context;
-        private readonly IEmailService _emailService;
+        private readonly IEmailRepository _emailRepository;
         private readonly IEmailTemplateRepository _emailTemplateRepository;
 
-        public StudentRepository(AppDbContext context, IEmailService emailService, IEmailTemplateRepository emailTemplateRepository)
+        public StudentRepository(AppDbContext context, IEmailRepository emailRepository, IEmailTemplateRepository emailTemplateRepository)
         {
             _context = context;
-            _emailService = emailService;
+            _emailRepository = emailRepository;
             _emailTemplateRepository = emailTemplateRepository;
         }
 
@@ -77,7 +77,7 @@ namespace StudentDocManagement.Services.Repository
                 body = _emailTemplateRepository.GetRejectionTemplate(student.FullName, student.Email, student.RegisterNo);
             }
 
-            await _emailService.SendEmailAsync(student.Email, subject, body);
+            await _emailRepository.SendEmailAsync(student.Email, subject, body);
         }
         catch (Exception ex)
         {

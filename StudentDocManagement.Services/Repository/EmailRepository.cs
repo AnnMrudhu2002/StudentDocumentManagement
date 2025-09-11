@@ -10,21 +10,21 @@ using System.Threading.Tasks;
 
 namespace StudentDocManagement.Services.Repository
 {
-    public class EmailService : IEmailService
+    public class EmailRepository : IEmailRepository
     {
-        private readonly IConfiguration _config;
+        private readonly IConfiguration _configuration;
 
-        public EmailService(IConfiguration config)
+        public EmailRepository(IConfiguration configuration)
         {
-            _config = config;
+            _configuration = configuration;
         }
 
         public async Task SendEmailAsync(string toEmail, string subject, string body)
         {
-            var smtpHost = _config["EmailSettings:SmtpServer"];
-            var smtpPort = int.Parse(_config["EmailSettings:Port"]);
-            var fromEmail = _config["EmailSettings:FromEmail"];
-            var fromPassword = _config["EmailSettings:Password"];
+            var smtpHost = _configuration["EmailSettings:SmtpServer"];
+            var smtpPort = int.Parse(_configuration["EmailSettings:Port"]);
+            var fromEmail = _configuration["EmailSettings:FromEmail"];
+            var fromPassword = _configuration["EmailSettings:Password"];
 
             using (var client = new SmtpClient(smtpHost, smtpPort))
             {

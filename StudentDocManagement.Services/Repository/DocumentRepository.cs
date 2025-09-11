@@ -17,17 +17,17 @@ namespace StudentDocManagement.Services.Repository
     public class DocumentRepository : IDocumentRepository
     {
         private readonly AppDbContext _context;
-        private readonly IStudentProfileRepository _repo;
+        private readonly IStudentProfileRepository _studentProfileRepository;
 
-        public DocumentRepository(AppDbContext context, IStudentProfileRepository repo)
+        public DocumentRepository(AppDbContext context, IStudentProfileRepository studentProfileRepository)
         {
             _context = context;
-            _repo = repo;
+            _studentProfileRepository = studentProfileRepository;
         }
 
         public async Task<(bool Success, string Message, Document? Document)> UploadDocumentAsync(ApplicationUser user, FileUploadDto fileDto)
         {
-            var student = await _repo.GetStudentByUserIdAsync(user.Id);
+            var student = await _studentProfileRepository.GetStudentByUserIdAsync(user.Id);
             if (student == null)
                 return (false, "Student profile not found", null);
 
