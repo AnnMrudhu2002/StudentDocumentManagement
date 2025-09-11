@@ -19,7 +19,6 @@ namespace StudentDocumentManagement.Controllers
             _context = context;
         }
 
-        // GET: api/AdminDashboard/summary
         [HttpGet("summary")]
         public async Task<IActionResult> GetDashboardSummary()
         {
