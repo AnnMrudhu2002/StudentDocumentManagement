@@ -13,8 +13,8 @@ namespace StudentDocumentManagement.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(AuthenticationSchemes = "Bearer")]
-    [Authorize(Roles = "Admin")]
+    //[Authorize(AuthenticationSchemes = "Bearer")]
+    //[Authorize(Roles = "Admin")]
     public class AdministrativeController : ControllerBase
     {
         private readonly RoleManager<IdentityRole> _roleManager;

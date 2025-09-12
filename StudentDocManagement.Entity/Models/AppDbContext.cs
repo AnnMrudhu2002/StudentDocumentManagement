@@ -23,6 +23,10 @@ namespace StudentDocManagement.Entity.Models
         public DbSet<StatusMaster> StatusMasters { get; set; }
         public DbSet<StudentEducation> StudentEducations { get; set; }
         public DbSet<Notification> Notifications { get; set; }
+        public DbSet<State> states { get; set; }
+        public DbSet<District> districts { get; set; }
+        public DbSet<Pincode> pincodes { get; set; }
+        public DbSet<PostOffices> postOffices { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -66,7 +70,35 @@ namespace StudentDocManagement.Entity.Models
                 .HasOne(se => se.Student)
                 .WithMany(s => s.StudentEducations)
                 .HasForeignKey(se => se.StudentId)
-                .OnDelete(DeleteBehavior.Restrict); 
+                .OnDelete(DeleteBehavior.Restrict);
+
+
+            modelBuilder.Entity<State>()
+           .HasIndex(s => s.StateName)
+              .IsUnique();
+
+            modelBuilder.Entity<District>()
+                .HasIndex(d => new { d.StateId, d.DistrictName })
+                .IsUnique();
+
+            modelBuilder.Entity<Pincode>()
+                .HasIndex(p => new { p.DistrictId, p.PincodeId })
+                .IsUnique();
+
+            modelBuilder.Entity<District>()
+                .HasOne(d => d.State)
+                .WithMany(s => s.Districts)
+                .HasForeignKey(d => d.StateId);
+
+            modelBuilder.Entity<Pincode>()
+                .HasOne(p => p.District)
+                .WithMany(d => d.Pincodes)
+                .HasForeignKey(p => p.DistrictId);
+
+            modelBuilder.Entity<PostOffices>()
+                .HasOne(po => po.Pincode)
+                .WithMany(p => p.postOffices)
+                .HasForeignKey(po => po.PincodeId);
 
 
             // ========================

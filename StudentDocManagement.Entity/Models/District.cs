@@ -10,17 +10,12 @@ namespace StudentDocManagement.Entity.Models
 {
     public class District
     {
-        [Key]
-        public long DistrictId { get; set; }
+        public int DistrictId { get; set; }
+        public string DistrictName { get; set; }
 
-        [Required, MaxLength(100)]
-        public string DistrictName { get; set; } = string.Empty;
+        public int StateId { get; set; }
+        public State State { get; set; }
 
-        // Foreign key to State
-        public long StateId { get; set; }
-        [ForeignKey("StateId")]
-        //public State? State { get; set; }
-
-        public ICollection<PostOffice> PostOffices { get; set; } = new List<PostOffice>();
+        public ICollection<Pincode> Pincodes { get; set; }
     }
 }

@@ -12,8 +12,8 @@ using StudentDocManagement.Entity.Models;
 namespace StudentDocManagement.Entity.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250909110530_six")]
-    partial class six
+    [Migration("20250912104813_abin")]
+    partial class abin
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

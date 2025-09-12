@@ -8,20 +8,12 @@ using System.Threading.Tasks;
 
 namespace StudentDocManagement.Entity.Models
 {
-    public class PostOffice
+    public class PostOffices
     {
-        [Key]
-        public long PostOfficeId { get; set; }
+        public int OfficeId { get; set; }
+        public string OfficeName { get; set; }
 
-        [Required, MaxLength(100)]
-        public string PostOfficeName { get; set; } = string.Empty;
-
-        [MaxLength(10)]
-        public string Pincode { get; set; } = string.Empty;
-
-        // Foreign key to District
-        public long DistrictId { get; set; }
-        [ForeignKey("DistrictId")]
-        public District? District { get; set; }
+        public int PincodeId { get; set; }
+        public Pincode Pincode { get; set; }
     }
 }

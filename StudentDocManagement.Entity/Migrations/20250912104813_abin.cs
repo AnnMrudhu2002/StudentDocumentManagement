@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace StudentDocManagement.Entity.Migrations
 {
     /// <inheritdoc />
-    public partial class second : Migration
+    public partial class abin : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -72,7 +72,6 @@ namespace StudentDocManagement.Entity.Migrations
                 {
                     StatusId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    StatusType = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     StatusName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
                 },
                 constraints: table =>
@@ -107,9 +106,9 @@ namespace StudentDocManagement.Entity.Migrations
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     FullName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    RegisterNo = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    RegisterNo = table.Column<string>(type: "nvarchar(8)", maxLength: 8, nullable: false),
                     CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    AccountStatusId = table.Column<int>(type: "int", nullable: false),
+                    StatusId = table.Column<int>(type: "int", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -129,8 +128,8 @@ namespace StudentDocManagement.Entity.Migrations
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_AspNetUsers_StatusMasters_AccountStatusId",
-                        column: x => x.AccountStatusId,
+                        name: "FK_AspNetUsers_StatusMasters_StatusId",
+                        column: x => x.StatusId,
                         principalTable: "StatusMasters",
                         principalColumn: "StatusId",
                         onDelete: ReferentialAction.Cascade);
@@ -228,7 +227,7 @@ namespace StudentDocManagement.Entity.Migrations
                     StudentId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    RegisterNo = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    RegisterNo = table.Column<string>(type: "nvarchar(8)", maxLength: 8, nullable: false),
                     DOB = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Gender = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PhoneNumber = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false),
@@ -242,7 +241,7 @@ namespace StudentDocManagement.Entity.Migrations
                     IdProofTypeId = table.Column<int>(type: "int", nullable: false),
                     IdProofNumber = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     CourseId = table.Column<int>(type: "int", nullable: false),
-                    ApplicationStatusId = table.Column<int>(type: "int", nullable: false),
+                    StatusId = table.Column<int>(type: "int", nullable: false),
                     CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
@@ -274,8 +273,8 @@ namespace StudentDocManagement.Entity.Migrations
                         principalColumn: "IdProofTypeId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Student_StatusMasters_ApplicationStatusId",
-                        column: x => x.ApplicationStatusId,
+                        name: "FK_Student_StatusMasters_StatusId",
+                        column: x => x.StatusId,
                         principalTable: "StatusMasters",
                         principalColumn: "StatusId",
                         onDelete: ReferentialAction.Restrict);
@@ -352,19 +351,12 @@ namespace StudentDocManagement.Entity.Migrations
                     InstituteName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     PassingYear = table.Column<int>(type: "int", nullable: false),
                     MarksPercentage = table.Column<decimal>(type: "decimal(5,2)", precision: 5, scale: 2, nullable: false),
-                    DocumentId = table.Column<int>(type: "int", nullable: false),
                     CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_StudentEducations", x => x.EducationId);
-                    table.ForeignKey(
-                        name: "FK_StudentEducations_Documents_DocumentId",
-                        column: x => x.DocumentId,
-                        principalTable: "Documents",
-                        principalColumn: "DocumentId",
-                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_StudentEducations_Student_StudentId",
                         column: x => x.StudentId,
@@ -380,7 +372,7 @@ namespace StudentDocManagement.Entity.Migrations
                 {
                     { 1, "Computer Science" },
                     { 2, "Information Technology" },
-                    { 3, "Electronics and Communication" },
+                    { 3, "Electronics and Communication Engineering" },
                     { 4, "Mechanical Engineering" },
                     { 5, "Civil Engineering" },
                     { 6, "Electrical Engineering" },
@@ -413,19 +405,14 @@ namespace StudentDocManagement.Entity.Migrations
 
             migrationBuilder.InsertData(
                 table: "StatusMasters",
-                columns: new[] { "StatusId", "StatusName", "StatusType" },
+                columns: new[] { "StatusId", "StatusName" },
                 values: new object[,]
                 {
-                    { 1, "Pending", "RegistrationStatus" },
-                    { 2, "Approved", "RegistrationStatus" },
-                    { 3, "Rejected", "RegistrationStatus" },
-                    { 4, "Pending", "ProfileStatus" },
-                    { 5, "Approved", "ProfileStatus" },
-                    { 6, "Changes Needed", "ProfileStatus" },
-                    { 7, "Rejected", "ProfileStatus" },
-                    { 8, "Pending", "DocumentStatus" },
-                    { 9, "Approved", "DocumentStatus" },
-                    { 10, "Rejected", "DocumentStatus" }
+                    { 1, "Pending" },
+                    { 2, "Approved" },
+                    { 3, "Rejected" },
+                    { 4, "Changes Needed" },
+                    { 5, "In Review" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -461,15 +448,15 @@ namespace StudentDocManagement.Entity.Migrations
                 column: "NormalizedEmail");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AspNetUsers_AccountStatusId",
-                table: "AspNetUsers",
-                column: "AccountStatusId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_AspNetUsers_RegisterNo",
                 table: "AspNetUsers",
                 column: "RegisterNo",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AspNetUsers_StatusId",
+                table: "AspNetUsers",
+                column: "StatusId");
 
             migrationBuilder.CreateIndex(
                 name: "UserNameIndex",
@@ -499,11 +486,6 @@ namespace StudentDocManagement.Entity.Migrations
                 column: "StudentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Student_ApplicationStatusId",
-                table: "Student",
-                column: "ApplicationStatusId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Student_ApplicationUserId",
                 table: "Student",
                 column: "ApplicationUserId");
@@ -519,15 +501,15 @@ namespace StudentDocManagement.Entity.Migrations
                 column: "IdProofTypeId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Student_StatusId",
+                table: "Student",
+                column: "StatusId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Student_UserId",
                 table: "Student",
                 column: "UserId",
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_StudentEducations_DocumentId",
-                table: "StudentEducations",
-                column: "DocumentId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_StudentEducations_StudentId",
@@ -554,6 +536,9 @@ namespace StudentDocManagement.Entity.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "Documents");
+
+            migrationBuilder.DropTable(
                 name: "Notifications");
 
             migrationBuilder.DropTable(
@@ -561,9 +546,6 @@ namespace StudentDocManagement.Entity.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
-
-            migrationBuilder.DropTable(
-                name: "Documents");
 
             migrationBuilder.DropTable(
                 name: "DocumentTypes");

@@ -6,7 +6,13 @@ using System.Threading.Tasks;
 
 namespace StudentDocManagement.Entity.Models
 {
-    internal class States
+    public class State
     {
+        public int StateId { get; set; }
+        public string StateName { get; set; }
+
+        // Navigation
+        public ICollection<District> Districts { get; set; }
     }
+
 }
