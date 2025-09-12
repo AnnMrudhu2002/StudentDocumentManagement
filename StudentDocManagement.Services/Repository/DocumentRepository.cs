@@ -34,6 +34,15 @@ namespace StudentDocManagement.Services.Repository
             if (student == null)
                 return (false, "Student profile not found", null);
 
+            // Check if this document type already uploaded by the student
+            var existingDoc = await _context.Documents
+                .FirstOrDefaultAsync(d => d.StudentId == student.StudentId && d.DocumentTypeId == fileDto.DocumentTypeId);
+
+            if (existingDoc != null)
+            {
+                return (false, "You have already uploaded the document", null);
+            }
+
             // Validate file
             var validationMessage = ValidateFile(fileDto);
             if (validationMessage != null)
@@ -73,7 +82,7 @@ namespace StudentDocManagement.Services.Repository
 
             var allowedMimeTypes = new[] { "application/pdf", "image/jpg", "image/jpeg", "image/png" };
             var allowedExtensions = new[] { ".pdf", ".jpg", ".jpeg", ".png" };
-   
+
             if (!allowedMimeTypes.Contains(fileDto.ContentType.ToLower()) &&
                 !allowedExtensions.Contains(Path.GetExtension(fileDto.FileName).ToLower()))
             {
@@ -160,28 +169,84 @@ namespace StudentDocManagement.Services.Repository
             var fileBytes = await File.ReadAllBytesAsync(doc.FilePath);
             return (fileBytes, doc.FileName);
         }
+    
+
+        public async Task<bool> UpdateStatusAsync(int documentId, int statusId, string? remarks)
+        {
+            var doc = await _context.Documents.FindAsync(documentId);
+            if (doc == null) return false;
+
+            doc.StatusId = statusId;
+            doc.Remarks = remarks;
+            if (statusId == 2) // Example: 2 = Approved
+                doc.ApprovedOn = DateTime.UtcNow;
+
+            _context.Documents.Update(doc);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        ////list uploaded files
+        //public async Task<IEnumerable<StudentDocumentDto>> GetStudentDocumentDetails(int studentId)
+        //{
+        //    return await _context.Documents
+        //        .Include(d => d.DocumentType)
+        //        .Include(d => d.Status)
+        //        .Where(d => d.StudentId == studentId && studentId != 3)
+        //        .Select(d => new StudentDocumentDto
+        //        {
+        //            DocumentId = d.DocumentId,
+        //            DocumentTypeName = d.DocumentType.TypeName, // assumes you have TypeName field
+        //            StatusName = d.Status.StatusName,          // assumes you have StatusName field
+        //            Remarks = d.Remarks,
+        //            UploadedOn = d.UploadedOn,
+        //            FileName = d.FileName
+        //        })
+        //        .ToListAsync();
+        //}
+
+        //}
+
+
+        public async Task<(bool Success, string Message)> DeleteDocumentAsync(ApplicationUser user, int documentId)
+        {
+            var student = await _studentProfileRepository.GetStudentByUserIdAsync(user.Id);
+            if (student == null)
+                return (false, "Student profile not found");
+
+            // Find document for this student
+            var document = await _context.Documents
+                .FirstOrDefaultAsync(d => d.DocumentId == documentId && d.StudentId == student.StudentId);
+
+            if (document == null)
+                return (false, "Document not found or you don't have permission to delete it");
+
+            //  Prevent deletion if status is Approved (2) or Rejected (3)
+            if (document.StatusId == 2)
+                return (false, "Approved documents cannot be deleted");
+            if (document.StatusId == 3)
+                return (false, "Rejected documents cannot be deleted");
+
+            try
+            {
+                // Delete file from disk if exists
+                if (File.Exists(document.FilePath))
+                {
+                    File.Delete(document.FilePath);
+                }
+
+                // Delete from DB
+                _context.Documents.Remove(document);
+                await _context.SaveChangesAsync();
+
+                return (true, "Document deleted successfully");
+            }
+            catch (Exception ex)
+            {
+                return (false, $"Error deleting document: {ex.Message}");
+            }
+        }
+
+
     }
-
-
-
-    ////list uploaded files
-    //public async Task<IEnumerable<StudentDocumentDto>> GetStudentDocumentDetails(int studentId)
-    //{
-    //    return await _context.Documents
-    //        .Include(d => d.DocumentType)
-    //        .Include(d => d.Status)
-    //        .Where(d => d.StudentId == studentId && studentId != 3)
-    //        .Select(d => new StudentDocumentDto
-    //        {
-    //            DocumentId = d.DocumentId,
-    //            DocumentTypeName = d.DocumentType.TypeName, // assumes you have TypeName field
-    //            StatusName = d.Status.StatusName,          // assumes you have StatusName field
-    //            Remarks = d.Remarks,
-    //            UploadedOn = d.UploadedOn,
-    //            FileName = d.FileName
-    //        })
-    //        .ToListAsync();
-    //}
-
-//}
 }

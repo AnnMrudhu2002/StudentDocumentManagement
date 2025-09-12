@@ -86,21 +86,6 @@ namespace StudentDocumentManagement.Controllers
             return Ok(docs);
         }
 
-
-        //[HttpGet("download/{documentId}")]
-        //public async Task<IActionResult> DownloadDocument(int documentId)
-        //{
-        //    // Use repository to get document by ID
-        //    var doc = await _documentRepository.GetByIdAsync(documentId);
-        //    if (doc == null || !System.IO.File.Exists(doc.FilePath))
-        //        return NotFound("File not found.");
-
-        //    var fileBytes = await System.IO.File.ReadAllBytesAsync(doc.FilePath);
-        //    var contentType = "application/octet-stream"; // You can use MimeMapping if needed
-        //    return File(fileBytes, contentType, doc.FileName);
-        //}
-
-
         [Authorize(Roles = "Student, Admin")]
 
         [HttpGet("download/{documentId}")]
@@ -117,7 +102,60 @@ namespace StudentDocumentManagement.Controllers
             return File(result.Value.FileBytes, "application/octet-stream", result.Value.FileName);
         }
 
+        [HttpPost("reupload/{documentId}")]
+        public async Task<IActionResult> ReUploadDocument(int documentId, IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+                return BadRequest("No file uploaded.");
 
+            // Get existing document
+            var existingDoc = await _documentRepository.GetByIdAsync(documentId);
+            if (existingDoc == null)
+                return NotFound("Document not found.");
+
+            // Save new file to server
+            var storagePath = Path.Combine(Directory.GetCurrentDirectory(), "FileStorage");
+            if (!Directory.Exists(storagePath))
+                Directory.CreateDirectory(storagePath);
+
+            var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+            var filePath = Path.Combine(storagePath, uniqueFileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            // Update document fields
+            existingDoc.FileName = uniqueFileName;
+            existingDoc.FilePath = filePath;
+            existingDoc.StatusId = 1; // Reset to Pending
+            existingDoc.Remarks = null;
+            existingDoc.UploadedOn = DateTime.UtcNow;
+
+            // Update in repository
+            var updated = await _documentRepository.UpdateStatusAsync(existingDoc.DocumentId, existingDoc.StatusId, existingDoc.Remarks);
+            if (!updated)
+                return BadRequest("Failed to update document.");
+
+            return Ok(new { message = "File re-uploaded successfully" });
+        }
+
+
+        [HttpDelete("{documentId}")]
+        public async Task<IActionResult> DeleteDocument(int documentId)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+                return Unauthorized(new { message = "User not found" });
+
+            var (success, message) = await _documentRepository.DeleteDocumentAsync(user, documentId);
+
+            if (!success)
+                return BadRequest(new { message });
+
+            return Ok(new { message });
+        }
 
     }
 }
