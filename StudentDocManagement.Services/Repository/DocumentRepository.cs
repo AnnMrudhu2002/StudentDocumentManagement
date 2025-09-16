@@ -32,7 +32,7 @@ namespace StudentDocManagement.Services.Repository
         {
             var student = await _studentProfileRepository.GetStudentByUserIdAsync(user.Id);
             if (student == null)
-                return (false, "Student profile not found", null);
+                return (false, "Please complete profile before uploading", null);
 
             // Check if this document type already uploaded by the student
             var existingDoc = await _context.Documents
@@ -64,7 +64,7 @@ namespace StudentDocManagement.Services.Repository
                 UploadedOn = DateTime.UtcNow
             };
 
-            _context.Documents.Add(document);
+           await _context.Documents.AddAsync(document);
             await _context.SaveChangesAsync();
 
             return (true, "Document uploaded successfully", document);

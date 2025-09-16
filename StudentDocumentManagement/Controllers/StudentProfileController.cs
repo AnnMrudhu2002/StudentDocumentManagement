@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Mapster;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -30,14 +31,32 @@ namespace StudentDocumentManagement.Controllers
         public async Task<IActionResult> GetProfile()
         {
             var user = await _userManager.GetUserAsync(User);
-            if (user == null)
+            if (user is null)
                 return Unauthorized(new { message = "User not found" });
 
             var student = await _studentProfileRepository.GetStudentByUserIdAsync(user.Id);
-            if (student == null)
+            if (student is null)
                 return NotFound(new { message = "Profile not found" });
+            //var prof = student.Adapt<StudentProfileDto>();
+           
+            var profileDto = new StudentProfileDto
+            {
+                DOB = student.DOB,
+                Gender = student.Gender,
+                PhoneNumber = student.PhoneNumber,
+                AlternatePhoneNumber = student.AlternatePhoneNumber,
+                Address = student.Address,
+                PermanentAddress = student.PermanentAddress,
+                City = student.City,
+                District = student.District,
+                State = student.State,
+                Pincode = student.Pincode,
+                IdProofTypeId = student.IdProofTypeId,
+                IdProofNumber = student.IdProofNumber,
+                CourseId = student.CourseId
+            };
 
-            return Ok(student);
+            return Ok(profileDto);
         }
 
         [HttpPost("SubmitProfile")]
@@ -120,20 +139,33 @@ namespace StudentDocumentManagement.Controllers
             return Ok(list);
         }
 
-        [HttpGet("States")]
+        [HttpGet("getAllState")]
         public async Task<IActionResult> GetStates()
         {
-            // Hardcoded list of Indian states
-            var states = new List<string> {
-                      "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
-                      "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand",
-                      "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur",
-                      "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab",
-                      "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura",
-                      "Uttar Pradesh", "Uttarakhand", "West Bengal"
-            };
+            var states = await _studentProfileRepository.GetAllStatesAsync();
             return Ok(states);
         }
+        [HttpGet("{stateId}")]
+        public async Task<IActionResult> GetDistricts(int stateId)
+        {
+            var districts = await _studentProfileRepository.GetDistrictsByStateIdAsync(stateId);
+            if (districts == null || !districts.Any())
+                return NotFound("No districts found for this state.");
 
+            return Ok(districts);
+        }
+        [HttpGet("pincodes/{districtId}")]
+        public async Task<IActionResult> GetPincodes(int districtId)
+        {
+            var pincodes = await _studentProfileRepository.GetPincodesByDistrictIdAsync(districtId);
+            return Ok(pincodes);
+        }
+
+        [HttpGet("postoffices/{pincodeId}")]
+        public async Task<IActionResult> GetPostOffices(int pincodeId)
+        {
+            var offices = await _studentProfileRepository.GetPostOfficesByPincodeIdAsync(pincodeId);
+            return Ok(offices);
+        }
     }
 }

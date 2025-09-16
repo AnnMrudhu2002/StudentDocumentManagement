@@ -1,19 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
+using StudentDocManagement.Entity.Models;
 
-namespace StudentDocManagement.Entity.Models
+public class PostOffices
 {
-    public class PostOffices
-    {
-        public int OfficeId { get; set; }
-        public string OfficeName { get; set; }
+    [Key]
+    public int OfficeId { get; set; }
 
-        public int PincodeId { get; set; }
-        public Pincode Pincode { get; set; }
-    }
+    public string OfficeName { get; set; }
+
+    public int PincodeId { get; set; }
+    public Pincode Pincode { get; set; }
 }

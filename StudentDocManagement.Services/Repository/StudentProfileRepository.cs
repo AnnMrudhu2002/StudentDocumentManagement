@@ -21,8 +21,12 @@ namespace StudentDocManagement.Services.Repository
 
         public async Task<Student?> GetStudentByUserIdAsync(string userId)
         {
-            return await _context.Students.FirstOrDefaultAsync(s => s.UserId == userId);
+            return await _context.Students
+                .Include(s => s.Course)          // navigation property (ok)
+                .Include(s => s.IdProofType)     // navigation property (ok)
+                .FirstOrDefaultAsync(s => s.UserId == userId);
         }
+
 
 
         public async Task<(bool Success, string Message, Student? Student)> SubmitProfileAsync(ApplicationUser user, StudentProfileDto dto)
@@ -132,7 +136,7 @@ namespace StudentDocManagement.Services.Repository
                     CreatedOn = DateTime.UtcNow
                 };
 
-                _context.StudentEducations.Add(education);
+                await _context.StudentEducations.AddAsync(education);
                 await _context.SaveChangesAsync();
 
                 return (true, $"{dto.EducationLevel} education details submitted successfully", education);
@@ -152,7 +156,35 @@ namespace StudentDocManagement.Services.Repository
         }
 
 
+        public async Task<IEnumerable<State>> GetAllStatesAsync()
+        {
+            return await _context.states
+                .OrderBy(s => s.StateName)
+                .ToListAsync();
+        }
 
+        public async Task<IEnumerable<District>> GetDistrictsByStateIdAsync(int stateId)
+        {
+            return await _context.districts
+                .Where(d => d.StateId == stateId)
+                .OrderBy(d => d.DistrictName)
+                .ToListAsync();
+        }
+        public async Task<IEnumerable<Pincode>> GetPincodesByDistrictIdAsync(int districtId)
+        {
+            return await _context.pincodes
+                .Where(p => p.DistrictId == districtId)
+                .OrderBy(p => p.Code)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<PostOffices>> GetPostOfficesByPincodeIdAsync(int pincodeId)
+        {
+            return await _context.postOffices
+                .Where(po => po.PincodeId == pincodeId)
+                .OrderBy(po => po.OfficeName)
+                .ToListAsync();
+        }
 
 
 

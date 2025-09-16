@@ -64,5 +64,6 @@ namespace StudentDocManagement.Entity.Dto
         public int IdProofTypeId { get; set; }
         public string IdProofNumber { get; set; } = string.Empty;
         public int CourseId { get; set; }
+      
     }
 }

@@ -52,11 +52,11 @@ namespace StudentDocManagement.Entity.Validator
                 .NotEmpty().WithMessage("State is required")
                 .MaximumLength(100).WithMessage("State cannot exceed 100 characters");
 
-            RuleFor(x => x.Pincode)
-                .NotEmpty().WithMessage("Pincode is required")
-                .Length(6).WithMessage("Pincode must be exactly 6 digits")
-                .Matches(@"^\d{6}$").WithMessage("Pincode must contain digits only")
-                .Matches(@"^[1-9]\d{5}$").WithMessage("Pincode cannot start with 0");
+            //RuleFor(x => x.Pincode)
+            //    .NotEmpty().WithMessage("Pincode is required")
+            //    .Length(6).WithMessage("Pincode must be exactly 6 digits")
+            //    .Matches(@"^\d{6}$").WithMessage("Pincode must contain digits only")
+            //    .Matches(@"^[1-9]\d{5}$").WithMessage("Pincode cannot start with 0");
 
 
             RuleFor(x => x.IdProofTypeId)
