@@ -11,4 +11,5 @@ public interface IAdminRepository
 
     // Approve or reject a document
     Task<bool> UpdateDocumentStatusAsync(int documentId, int statusId, string? remarks);
+    Task<Student> GetStudentByIdAsync(int studentId);
 }

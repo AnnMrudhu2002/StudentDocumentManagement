@@ -21,6 +21,9 @@ namespace StudentDocManagement.Services.Interface
         Task<IEnumerable<Pincode>> GetPincodesByDistrictIdAsync(int districtId);
         Task<IEnumerable<PostOffices>> GetPostOfficesByPincodeIdAsync(int pincodeId);
 
+        //Task<List<StudentProfileDto>> GetStudentProfile();
+    
+
 
     }
 }

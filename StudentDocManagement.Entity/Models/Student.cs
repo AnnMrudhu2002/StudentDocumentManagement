@@ -44,7 +44,7 @@ namespace StudentDocManagement.Entity.Models
         public string District { get; set; } = string.Empty;
         public string State { get; set; } = string.Empty;
         public string Pincode { get; set; } = string.Empty;
-
+        
         public int IdProofTypeId { get; set; }
         public IdProofType? IdProofType { get; set; }
 

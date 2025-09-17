@@ -58,6 +58,47 @@ namespace StudentDocumentManagement.Controllers
 
             return Ok(profileDto);
         }
+        [HttpGet("GetProfilePage")]
+        public async Task<IActionResult> GetUserProfile()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user is null)
+                return Unauthorized(new { message = "User not found" });
+
+            var student = await _studentProfileRepository.GetStudentByUserIdAsync(user.Id);
+            if (student is null)
+                return NotFound(new { message = "Profile not found" });
+            //var prof = student.Adapt<StudentProfileDto>();
+
+            var profileDto = new ProfilePageDto
+            {
+                DOB = student.DOB,
+                Gender = student.Gender,
+                PhoneNumber = student.PhoneNumber,
+                AlternatePhoneNumber = student.AlternatePhoneNumber,
+                Address = student.Address,
+                PermanentAddress = student.PermanentAddress,
+                City = student.City,
+                District = student.District,
+                State = student.State,
+                Pincode = student.Pincode,
+                IdProofTypeId = student.IdProofTypeId,
+                IdProofNumber = student.IdProofNumber,
+                FullName = user.FullName,
+                Email = user.Email,
+                CourseName = student.Course?.CourseName
+
+            };
+
+            return Ok(profileDto);
+        }
+
+     // allow all authenticated users
+
+      
+
+
+
 
         [HttpPost("SubmitProfile")]
         public async Task<IActionResult> SubmitProfile([FromBody] StudentProfileDto dto)

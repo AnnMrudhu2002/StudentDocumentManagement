@@ -216,10 +216,10 @@ namespace StudentDocManagement.Services.Repository
 
             // Find document for this student
             var document = await _context.Documents
-                .FirstOrDefaultAsync(d => d.DocumentId == documentId && d.StudentId == student.StudentId);
+                .FindAsync(documentId);
 
             if (document == null)
-                return (false, "Document not found or you don't have permission to delete it");
+                return (false, "Document not found ");
 
             //  Prevent deletion if status is Approved (2) or Rejected (3)
             if (document.StatusId == 2)

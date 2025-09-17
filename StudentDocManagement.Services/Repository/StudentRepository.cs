@@ -1,14 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using StudentDocManagement.Entity.Models;
 using StudentDocManagement.Services.Interface;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Mail;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace StudentDocManagement.Services.Repository
 {
@@ -32,10 +24,10 @@ namespace StudentDocManagement.Services.Repository
                 .Where(u => u.StatusId == 1) // Pending
                 .Select(u => new
                 {
-                    FullName = u.FullName,
-                    Email = u.Email,
-                    RegisterNo = u.RegisterNo,
-                    Id = u.Id
+                    u.FullName,
+                    u.Email,
+                    u.RegisterNo,
+                    u.Id
                 })
                 .ToListAsync();
 
