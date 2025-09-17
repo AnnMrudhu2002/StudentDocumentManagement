@@ -55,7 +55,8 @@ namespace StudentDocManagement.Services.Repository
                     IdProofNumber = dto.IdProofNumber,
                     CourseId = dto.CourseId,
                     StatusId = 1, // Pending
-                    CreatedOn = DateTime.UtcNow
+                    CreatedOn = DateTime.UtcNow,
+                    IsAcknowledged = false //initially false
                 };
 
                 await _context.Students.AddAsync(student);
@@ -185,6 +186,28 @@ namespace StudentDocManagement.Services.Repository
                 .OrderBy(po => po.OfficeName)
                 .ToListAsync();
         }
+
+
+
+        public async Task<(bool Success, string Message)> AcknowledgeAsync(string userId)
+        {
+            var student = await _context.Students.FirstOrDefaultAsync(s => s.UserId == userId);
+            if (student == null)
+                return (false, "Student not found");
+
+            //check if 3 documents are uploaded
+            var docCount = await _context.Documents.CountAsync(d => d.StudentId == student.StudentId);
+            if (docCount < 3)
+                return (false, "Please upload all required documents before acknowledging");
+
+            student.IsAcknowledged = true;
+
+            _context.Students.Update(student);
+            await _context.SaveChangesAsync();
+
+            return (true, "Acknowledgment submitted successfully");
+        }
+
 
 
 

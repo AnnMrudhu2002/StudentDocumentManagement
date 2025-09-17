@@ -62,6 +62,9 @@ namespace StudentDocManagement.Entity.Models
         public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedOn { get; set; } = DateTime.UtcNow;
 
+        //boolean column for acknowledgment
+        public bool IsAcknowledged { get; set; } = false;
+
         public ICollection<StudentEducation> StudentEducations { get; set; } = new List<StudentEducation>();
         public ICollection<Document> Documents { get; set; } = new List<Document>();
         public ICollection<Notification> Notifications { get; set; } = new List<Notification>();

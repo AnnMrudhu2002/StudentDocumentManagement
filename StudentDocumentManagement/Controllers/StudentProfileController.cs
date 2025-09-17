@@ -176,5 +176,18 @@ namespace StudentDocumentManagement.Controllers
             var offices = await _studentProfileRepository.GetPostOfficesByPincodeIdAsync(pincodeId);
             return Ok(offices);
         }
+
+
+        [HttpPost("Acknowledge")]
+        public async Task<IActionResult> Acknowledge()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return Unauthorized();
+
+            var (success, message) = await _studentProfileRepository.AcknowledgeAsync(user.Id);
+            if (!success) return BadRequest(new { message });
+
+            return Ok(new { message });
+        }
     }
 }
