@@ -42,7 +42,7 @@ namespace StudentDocManagement.Services.Repository
                     UserId = user.Id,
                     RegisterNo = user.RegisterNo,
                     DOB = dto.DOB,
-                    Gender = dto.Gender,
+                    GenderId = dto.GenderId,
                     PhoneNumber = dto.PhoneNumber,
                     AlternatePhoneNumber = dto.AlternatePhoneNumber,
                     Address = dto.Address,
@@ -78,7 +78,7 @@ namespace StudentDocManagement.Services.Repository
 
                 // Update
                 existing.DOB = dto.DOB;
-                existing.Gender = dto.Gender;
+                existing.GenderId = dto.GenderId;
                 existing.PhoneNumber = dto.PhoneNumber;
                 existing.AlternatePhoneNumber = dto.AlternatePhoneNumber;
                 existing.Address = dto.Address;

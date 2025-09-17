@@ -26,7 +26,9 @@ namespace StudentDocManagement.Entity.Models
         public string RegisterNo { get; set; } = string.Empty;
 
         public DateTime DOB { get; set; }
-        public string Gender { get; set; } = string.Empty;
+        //public string Gender { get; set; } = string.Empty;
+        public int GenderId { get; set; }
+        public Gender? Gender { get; set; }
 
         [StringLength(15)]
         public string PhoneNumber { get; set; } = string.Empty;

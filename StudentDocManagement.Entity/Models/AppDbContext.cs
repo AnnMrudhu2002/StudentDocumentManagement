@@ -27,6 +27,8 @@ namespace StudentDocManagement.Entity.Models
         public DbSet<District> districts { get; set; }
         public DbSet<Pincode> pincodes { get; set; }
         public DbSet<PostOffices> postOffices { get; set; }
+        public DbSet<Gender> Genders { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -150,6 +152,17 @@ namespace StudentDocManagement.Entity.Models
                 
 
             );
+
+            // ========================
+            // Seed Gender
+            // ========================
+
+            modelBuilder.Entity<Gender>().HasData(
+                new Gender { GenderId = 1, Name = "Male" },
+                new Gender { GenderId = 2, Name = "Female" },
+                new Gender { GenderId = 3, Name = "Other" }
+);
+
 
 
         }

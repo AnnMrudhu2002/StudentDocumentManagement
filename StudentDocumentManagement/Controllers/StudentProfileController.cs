@@ -42,7 +42,7 @@ namespace StudentDocumentManagement.Controllers
             var profileDto = new StudentProfileDto
             {
                 DOB = student.DOB,
-                Gender = student.Gender,
+                GenderId = student.GenderId,
                 PhoneNumber = student.PhoneNumber,
                 AlternatePhoneNumber = student.AlternatePhoneNumber,
                 Address = student.Address,
@@ -135,6 +135,15 @@ namespace StudentDocumentManagement.Controllers
         {
             var list = await _context.Courses
                                      .Select(x => new { x.CourseId, x.CourseName })
+                                     .ToListAsync();
+            return Ok(list);
+        }
+
+        [HttpGet("Genders")]
+        public async Task<IActionResult> GetGenders()
+        {
+            var list = await _context.Genders
+                                     .Select(x => new { x.GenderId, x.Name })
                                      .ToListAsync();
             return Ok(list);
         }
