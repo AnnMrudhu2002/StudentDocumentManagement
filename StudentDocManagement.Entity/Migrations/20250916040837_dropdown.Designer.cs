@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using StudentDocManagement.Entity.Models;
 
@@ -11,9 +12,11 @@ using StudentDocManagement.Entity.Models;
 namespace StudentDocManagement.Entity.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250916040837_dropdown")]
+    partial class dropdown
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -439,41 +442,6 @@ namespace StudentDocManagement.Entity.Migrations
                         });
                 });
 
-            modelBuilder.Entity("StudentDocManagement.Entity.Models.Gender", b =>
-                {
-                    b.Property<int>("GenderId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("GenderId"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("GenderId");
-
-                    b.ToTable("Gender");
-
-                    b.HasData(
-                        new
-                        {
-                            GenderId = 1,
-                            Name = "Male"
-                        },
-                        new
-                        {
-                            GenderId = 2,
-                            Name = "Female"
-                        },
-                        new
-                        {
-                            GenderId = 3,
-                            Name = "Other"
-                        });
-                });
-
             modelBuilder.Entity("StudentDocManagement.Entity.Models.IdProofType", b =>
                 {
                     b.Property<int>("IdProofTypeId")
@@ -670,8 +638,9 @@ namespace StudentDocManagement.Entity.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("GenderId")
-                        .HasColumnType("int");
+                    b.Property<string>("Gender")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("IdProofNumber")
                         .IsRequired()
@@ -719,8 +688,6 @@ namespace StudentDocManagement.Entity.Migrations
                     b.HasIndex("ApplicationUserId");
 
                     b.HasIndex("CourseId");
-
-                    b.HasIndex("GenderId");
 
                     b.HasIndex("IdProofTypeId");
 
@@ -918,12 +885,6 @@ namespace StudentDocManagement.Entity.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("StudentDocManagement.Entity.Models.Gender", "Gender")
-                        .WithMany("Students")
-                        .HasForeignKey("GenderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("StudentDocManagement.Entity.Models.IdProofType", "IdProofType")
                         .WithMany()
                         .HasForeignKey("IdProofTypeId")
@@ -943,8 +904,6 @@ namespace StudentDocManagement.Entity.Migrations
                         .IsRequired();
 
                     b.Navigation("Course");
-
-                    b.Navigation("Gender");
 
                     b.Navigation("IdProofType");
 
@@ -972,11 +931,6 @@ namespace StudentDocManagement.Entity.Migrations
             modelBuilder.Entity("StudentDocManagement.Entity.Models.District", b =>
                 {
                     b.Navigation("Pincodes");
-                });
-
-            modelBuilder.Entity("StudentDocManagement.Entity.Models.Gender", b =>
-                {
-                    b.Navigation("Students");
                 });
 
             modelBuilder.Entity("StudentDocManagement.Entity.Models.Pincode", b =>

@@ -26,7 +26,9 @@ namespace StudentDocManagement.Entity.Models
         public string RegisterNo { get; set; } = string.Empty;
 
         public DateTime DOB { get; set; }
-        public string Gender { get; set; } = string.Empty;
+        //public string Gender { get; set; } = string.Empty;
+        public int GenderId { get; set; }
+        public Gender? Gender { get; set; }
 
         [StringLength(15)]
         public string PhoneNumber { get; set; } = string.Empty;
@@ -59,6 +61,9 @@ namespace StudentDocManagement.Entity.Models
 
         public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedOn { get; set; } = DateTime.UtcNow;
+
+        //boolean column for acknowledgment
+        public bool IsAcknowledged { get; set; } = false;
 
         public ICollection<StudentEducation> StudentEducations { get; set; } = new List<StudentEducation>();
         public ICollection<Document> Documents { get; set; } = new List<Document>();

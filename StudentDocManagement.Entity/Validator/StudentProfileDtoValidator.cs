@@ -12,11 +12,14 @@ namespace StudentDocManagement.Entity.Validator
     {
         public StudentProfileDtoValidator()
         {
+            ClassLevelCascadeMode = CascadeMode.Stop;
+
             RuleFor(x => x.DOB)
                 .NotEmpty().WithMessage("Date of Birth is required")
-                .LessThan(DateTime.Today).WithMessage("Date of Birth must be in the past");
+                .Must(d => d.Date <= DateTime.Today)
+                .WithMessage("Date of Birth must be today or in the past");
 
-            RuleFor(x => x.Gender)
+            RuleFor(x => x.GenderId)
                 .NotEmpty().WithMessage("Gender is required");
 
             RuleFor(x => x.PhoneNumber)

@@ -42,7 +42,7 @@ namespace StudentDocumentManagement.Controllers
             var profileDto = new StudentProfileDto
             {
                 DOB = student.DOB,
-                Gender = student.Gender,
+                GenderId = student.GenderId,
                 PhoneNumber = student.PhoneNumber,
                 AlternatePhoneNumber = student.AlternatePhoneNumber,
                 Address = student.Address,
@@ -180,6 +180,15 @@ namespace StudentDocumentManagement.Controllers
             return Ok(list);
         }
 
+        [HttpGet("Genders")]
+        public async Task<IActionResult> GetGenders()
+        {
+            var list = await _context.Genders
+                                     .Select(x => new { x.GenderId, x.Name })
+                                     .ToListAsync();
+            return Ok(list);
+        }
+
         [HttpGet("getAllState")]
         public async Task<IActionResult> GetStates()
         {
@@ -207,6 +216,19 @@ namespace StudentDocumentManagement.Controllers
         {
             var offices = await _studentProfileRepository.GetPostOfficesByPincodeIdAsync(pincodeId);
             return Ok(offices);
+        }
+
+
+        [HttpPost("Acknowledge")]
+        public async Task<IActionResult> Acknowledge()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return Unauthorized();
+
+            var (success, message) = await _studentProfileRepository.AcknowledgeAsync(user.Id);
+            if (!success) return BadRequest(new { message });
+
+            return Ok(new { message });
         }
     }
 }

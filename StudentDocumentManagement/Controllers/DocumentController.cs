@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using StudentDocManagement.Entity.Dto;
 using StudentDocManagement.Entity.Models;
 using StudentDocManagement.Services.Interface;
@@ -17,12 +15,14 @@ namespace StudentDocumentManagement.Controllers
         private readonly IDocumentRepository _documentRepository;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IStudentProfileRepository _studentProfileRepository;
+     
 
         public DocumentController(IDocumentRepository documentRepository, UserManager<ApplicationUser> userManager, IStudentProfileRepository studentProfileRepository)
         {
             _documentRepository = documentRepository;
             _userManager = userManager;
             _studentProfileRepository = studentProfileRepository;
+            
         }
 
         [HttpPost("UploadDocument")]
@@ -156,6 +156,9 @@ namespace StudentDocumentManagement.Controllers
 
             return Ok(new { message });
         }
+
+
+       
 
     }
 }
