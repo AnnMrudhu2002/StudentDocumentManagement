@@ -56,22 +56,22 @@ namespace StudentDocumentManagement.Controllers
             return Ok(new { message, documentId = document!.DocumentId });
         }
 
-        //// get student documents
-        //[Authorize(Roles = "Student")]
-        //[HttpGet("my-documents")]
-        //public async Task<IActionResult> GetMyDocuments()
-        //{
-        //    var user = await _userManager.GetUserAsync(User);
-        //    if (user == null)
-        //        return Unauthorized(new { message = "User not found" });
+        // get student documents
+        [Authorize(Roles = "Student")]
+        [HttpGet("my-documents")]
+        public async Task<IActionResult> GetMyDocuments()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+                return Unauthorized(new { message = "User not found" });
 
-        //    var student = await _studentProfileRepository.GetStudentByUserIdAsync(user.Id);
-        //    if (student == null)
-        //        return NotFound("Student profile not found");
+            var student = await _studentProfileRepository.GetStudentByUserIdAsync(user.Id);
+            if (student == null)
+                return NotFound("Student profile not found");
 
-        //    var docs = await _documentRepository.GetStudentDocumentsWithDetailsAsync(student.StudentId);
-        //    return Ok(docs);
-        //}
+            var docs = await _documentRepository.GetStudentDocumentsWithDetailsAsync(student.StudentId);
+            return Ok(docs);
+        }
 
         [Authorize(Roles = "Student")]
         [HttpGet("GetStudentDocuments")]

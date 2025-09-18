@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Reflection.Metadata;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace StudentDocManagement.Entity.Models
 {
@@ -68,6 +62,8 @@ namespace StudentDocManagement.Entity.Models
         public ICollection<StudentEducation> StudentEducations { get; set; } = new List<StudentEducation>();
         public ICollection<Document> Documents { get; set; } = new List<Document>();
         public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
+
+
     }
 
 }

@@ -70,7 +70,9 @@ public class AdminRepository : IAdminRepository
     {
         // Include related data if needed, e.g., Course
         return await _context.Students
-            .Include(s => s.Course) // optional, only if you need CourseName
+            .Include(s => s.Course)
+             .Include(s => s.Gender)
             .FirstOrDefaultAsync(s => s.StudentId == studentId);
     }
+
 }

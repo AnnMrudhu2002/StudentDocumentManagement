@@ -76,14 +76,11 @@ public class AdminController : ControllerBase
 
             DOB = student.DOB,
             GenderId = student.GenderId,
+            GenderName = student.Gender?.Name,
             PhoneNumber = student.PhoneNumber,
             AlternatePhoneNumber = student.AlternatePhoneNumber,
             Address = student.Address,
             PermanentAddress = student.PermanentAddress,
-            City = student.City,
-            District = student.District,
-            State = student.State,
-            Pincode = student.Pincode,
             IdProofTypeId = student.IdProofTypeId,
             IdProofNumber = student.IdProofNumber,
             FullName = user.FullName,
@@ -94,4 +91,15 @@ public class AdminController : ControllerBase
 
         return Ok(profileDto);
     }
+
+    //public async Task<string?> GetStateNameByIdAsync(int stateId)
+    //{
+    //    var state = await _context.states
+    //        .Where(s => s.StateId == stateId)
+    //        .Select(s => s.StateName)
+    //        .FirstOrDefaultAsync();
+
+    //    return state; // returns null if not found
+    //}
+
 }
