@@ -101,7 +101,13 @@ namespace StudentDocManagement.Services.Repository
             }
         }
 
-
+        public async Task<Student> GetStudentByIdAsync(int studentId)
+        {
+            // Include related data if needed, e.g., Course
+            return await _context.Students
+                .Include(s => s.Course) // optional, only if you need CourseName
+                .FirstOrDefaultAsync(s => s.StudentId == studentId);
+        }
 
         public async Task<List<StudentEducation>> GetEducationByStudentIdAsync(int studentId)
         {
