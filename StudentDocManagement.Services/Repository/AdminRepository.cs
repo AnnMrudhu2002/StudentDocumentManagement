@@ -56,10 +56,10 @@ public class AdminRepository : IAdminRepository
             doc.Remarks = remarks;
         }
 
-        if (statusId == 2) 
+        if (statusId == 2)
         {
             doc.Remarks = remarks;
-            doc.ApprovedOn = DateTime.UtcNow; 
+            doc.ApprovedOn = DateTime.UtcNow;
         }
         _context.Documents.Update(doc);
         await _context.SaveChangesAsync();

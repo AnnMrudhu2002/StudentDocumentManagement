@@ -27,6 +27,8 @@ namespace StudentDocumentManagement.Controllers
             _context = context;
         }
 
+
+        // get student profile details
         [HttpGet("GetProfile")]
         public async Task<IActionResult> GetProfile()
         {
@@ -37,8 +39,7 @@ namespace StudentDocumentManagement.Controllers
             var student = await _studentProfileRepository.GetStudentByUserIdAsync(user.Id);
             if (student is null)
                 return NotFound(new { message = "Profile not found" });
-            //var prof = student.Adapt<StudentProfileDto>();
-           
+
             var profileDto = new StudentProfileDto
             {
                 DOB = student.DOB,
@@ -59,6 +60,8 @@ namespace StudentDocumentManagement.Controllers
             return Ok(profileDto);
         }
 
+
+        // submit student profile details
         [HttpPost("SubmitProfile")]
         public async Task<IActionResult> SubmitProfile([FromBody] StudentProfileDto dto)
         {
@@ -74,6 +77,8 @@ namespace StudentDocumentManagement.Controllers
             return Ok(new { message, studentId = student!.StudentId });
         }
 
+
+        // get education details
         [HttpGet("GetEducation")]
         public async Task<IActionResult> GetEducation()
         {
@@ -90,10 +95,9 @@ namespace StudentDocumentManagement.Controllers
             if (educationList == null || educationList.Count == 0)
                 return NotFound(new { message = "Education details not found" });
 
-            // Map entity → DTO
             var result = educationList.Select(e => new StudentEducationDto
             {
-                EducationLevel = e.EducationLevel,   // ensure column exists
+                EducationLevel = e.EducationLevel,   
                 InstituteName = e.InstituteName,
                 PassingYear = e.PassingYear,
                 MarksPercentage = e.MarksPercentage
@@ -102,6 +106,8 @@ namespace StudentDocumentManagement.Controllers
             return Ok(result);
         }
 
+
+        // submit educational details
         [HttpPost("SubmitEducation")]
         public async Task<IActionResult> SubmitEducation([FromBody] StudentEducationListDto dto)
         {
@@ -121,6 +127,8 @@ namespace StudentDocumentManagement.Controllers
             return Ok(new { message = "Education details saved successfully" });
         }
 
+
+        // get all id proof types
         [HttpGet("IdProofTypes")]
         public async Task<IActionResult> GetIdProofTypes()
         {
@@ -130,6 +138,7 @@ namespace StudentDocumentManagement.Controllers
             return Ok(list);
         }
 
+        // get all courses
         [HttpGet("Courses")]
         public async Task<IActionResult> GetCourses()
         {
@@ -139,6 +148,8 @@ namespace StudentDocumentManagement.Controllers
             return Ok(list);
         }
 
+
+        // get all genders
         [HttpGet("Genders")]
         public async Task<IActionResult> GetGenders()
         {
@@ -148,12 +159,15 @@ namespace StudentDocumentManagement.Controllers
             return Ok(list);
         }
 
+        // get all states
         [HttpGet("getAllState")]
         public async Task<IActionResult> GetStates()
         {
             var states = await _studentProfileRepository.GetAllStatesAsync();
             return Ok(states);
         }
+
+        // get district by state
         [HttpGet("{stateId}")]
         public async Task<IActionResult> GetDistricts(int stateId)
         {
@@ -163,6 +177,8 @@ namespace StudentDocumentManagement.Controllers
 
             return Ok(districts);
         }
+
+        // get pincode by district
         [HttpGet("pincodes/{districtId}")]
         public async Task<IActionResult> GetPincodes(int districtId)
         {
@@ -170,6 +186,8 @@ namespace StudentDocumentManagement.Controllers
             return Ok(pincodes);
         }
 
+
+        // get post office by pincode
         [HttpGet("postoffices/{pincodeId}")]
         public async Task<IActionResult> GetPostOffices(int pincodeId)
         {
@@ -177,7 +195,7 @@ namespace StudentDocumentManagement.Controllers
             return Ok(offices);
         }
 
-
+        // acknowledgement for profile submission
         [HttpPost("Acknowledge")]
         public async Task<IActionResult> Acknowledge()
         {

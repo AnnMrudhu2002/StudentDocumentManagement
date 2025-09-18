@@ -19,6 +19,8 @@ namespace StudentDocumentManagement.Controllers
             _studentRepository = studentRepository;
         }
 
+
+        // get pending students
         [HttpGet("GetPendingStudents")]
         public async Task<IActionResult> GetPendingStudents()
         {
@@ -27,6 +29,8 @@ namespace StudentDocumentManagement.Controllers
             return Ok(new { message, students });
         }
 
+
+        // approve or reject pending students
         [HttpPatch("ApproveRejectStudents")]
         public async Task<IActionResult> UpdateStatus([FromBody] StudentStatusUpdateDto dto)
         {

@@ -14,7 +14,7 @@ public class AdminController : ControllerBase
         _adminRepository = adminRepository;
     }
 
-
+    // get students with pending documents
     [HttpGet("students-for-approval")]
     public async Task<IActionResult> GetStudentsForApproval()
     {
@@ -30,7 +30,7 @@ public class AdminController : ControllerBase
         return Ok(docs);
     }
 
-
+    // approve or reject document
     [HttpPost("document/{documentId}/update-status")]
     public async Task<IActionResult> UpdateDocumentStatus(int documentId, [FromQuery] int statusId, [FromQuery] string? remarks)
     {
