@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using StudentDocManagement.Entity.Dto;
 using StudentDocManagement.Entity.Models;
 using StudentDocManagement.Services.Interface;
@@ -16,16 +15,18 @@ namespace StudentDocumentManagement.Controllers
         private readonly IDocumentRepository _documentRepository;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IStudentProfileRepository _studentProfileRepository;
-        private readonly AppDbContext _context;
 
-        public DocumentController(IDocumentRepository documentRepository, UserManager<ApplicationUser> userManager, IStudentProfileRepository studentProfileRepository, AppDbContext context)
+
+        public DocumentController(IDocumentRepository documentRepository, UserManager<ApplicationUser> userManager, IStudentProfileRepository studentProfileRepository)
         {
             _documentRepository = documentRepository;
             _userManager = userManager;
             _studentProfileRepository = studentProfileRepository;
-            _context = context;
+
         }
 
+
+        // upload document
         [HttpPost("UploadDocument")]
         [Consumes("multipart/form-data")]
         [Authorize(Roles = "Student")]
@@ -54,23 +55,26 @@ namespace StudentDocumentManagement.Controllers
             return Ok(new { message, documentId = document!.DocumentId });
         }
 
-        [Authorize(Roles = "Student")]
-        [HttpGet("GetStudentDocuments")]
-        public async Task<IActionResult> GetStudentDocuments()
-        {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-                return Unauthorized(new { message = "User not found" });
-
-            var student = await _studentProfileRepository.GetStudentByUserIdAsync(user.Id);
-            if (student == null)
-                return NotFound(new { message = "Student not found" });
-
-            var documents = await _documentRepository.GetStudentDocumentsWithDetailsAsync(student.StudentId);
-            return Ok(documents);
-        }
 
 
+        //[Authorize(Roles = "Student")]
+        //[HttpGet("GetStudentDocuments")]
+        //public async Task<IActionResult> GetStudentDocuments()
+        //{
+        //    var user = await _userManager.GetUserAsync(User);
+        //    if (user == null)
+        //        return Unauthorized(new { message = "User not found" });
+
+        //    var student = await _studentProfileRepository.GetStudentByUserIdAsync(user.Id);
+        //    if (student == null)
+        //        return NotFound(new { message = "Student not found" });
+
+        //    var documents = await _documentRepository.GetStudentDocumentsWithDetailsAsync(student.StudentId);
+        //    return Ok(documents);
+        //}
+
+
+        // get student documents
         [Authorize(Roles = "Student")]
         [HttpGet("my-documents")]
         public async Task<IActionResult> GetMyDocuments()
@@ -87,8 +91,9 @@ namespace StudentDocumentManagement.Controllers
             return Ok(docs);
         }
 
-        [Authorize(Roles = "Student, Admin")]
 
+        // download document
+        [Authorize(Roles = "Student, Admin")]
         [HttpGet("download/{documentId}")]
         public async Task<IActionResult> DownloadDocument(int documentId)
         {
@@ -103,13 +108,14 @@ namespace StudentDocumentManagement.Controllers
             return File(result.Value.FileBytes, "application/octet-stream", result.Value.FileName);
         }
 
+
+        // reuplaod document
         [HttpPost("reupload/{documentId}")]
         public async Task<IActionResult> ReUploadDocument(int documentId, IFormFile file)
         {
             if (file == null || file.Length == 0)
                 return BadRequest("No file uploaded.");
 
-            // Get existing document
             var existingDoc = await _documentRepository.GetByIdAsync(documentId);
             if (existingDoc == null)
                 return NotFound("Document not found.");
@@ -131,7 +137,7 @@ namespace StudentDocumentManagement.Controllers
             existingDoc.FileName = uniqueFileName;
             existingDoc.FilePath = filePath;
             existingDoc.StatusId = 1; // Reset to Pending
-            existingDoc.Remarks = null;
+            existingDoc.Remarks = null; // clear remarks on reuploading
             existingDoc.UploadedOn = DateTime.UtcNow;
 
             // Update in repository
@@ -143,6 +149,7 @@ namespace StudentDocumentManagement.Controllers
         }
 
 
+        // delete document
         [HttpDelete("{documentId}")]
         public async Task<IActionResult> DeleteDocument(int documentId)
         {
@@ -158,14 +165,7 @@ namespace StudentDocumentManagement.Controllers
             return Ok(new { message });
         }
 
-        // GET: api/DocumentTypes
-        [AllowAnonymous]
-        [HttpGet("GetAllDocumentType")]
-        public async Task<ActionResult<IEnumerable<DocumentType>>> GetDocumentTypes()
-        {
-            var types = await _context.DocumentTypes.ToListAsync();
-            return Ok(types);
-        }
+
 
 
     }

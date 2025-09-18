@@ -16,7 +16,6 @@ namespace StudentDocManagement.Services.Interface
         Task<IEnumerable<StudentDocumentDto>> GetStudentDocumentsWithDetailsAsync(int studentId);
 
         Task<(byte[] FileBytes, string FileName)?> GetDocumentForDownloadAsync(int documentId, ApplicationUser user);
-        //Task<IEnumerable<StudentDocumentDto>> GetStudentDocumentDetails(int studentId);
         Task<bool> UpdateStatusAsync(int documentId, int statusId, string? remarks);
         Task<(bool Success, string Message)> DeleteDocumentAsync(ApplicationUser user, int documentId);
     }

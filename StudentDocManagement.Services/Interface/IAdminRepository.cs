@@ -3,13 +3,13 @@ using StudentDocManagement.Entity.Dto;
 
 public interface IAdminRepository
 {
-    // Get all students for admin to approve documents
+    // get all students with pending documents
     Task<IEnumerable<StudentWithDocsDto>> GetStudentsForApprovalAsync();
 
-    // Get all documents uploaded by a student
+    // get all documents uploaded by a student
     Task<IEnumerable<StudentDocumentDto>> GetDocumentsByStudentIdAsync(int studentId);
 
-    // Approve or reject a document
+    // approve or reject a document
     Task<bool> UpdateDocumentStatusAsync(int documentId, int statusId, string? remarks);
     Task<Student> GetStudentByIdAsync(int studentId);
 }
