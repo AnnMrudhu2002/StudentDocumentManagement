@@ -59,6 +59,8 @@ namespace StudentDocumentManagement.Controllers
 
             return Ok(profileDto);
         }
+
+
         [HttpGet("GetProfilePage")]
         public async Task<IActionResult> GetUserProfile()
         {
@@ -74,7 +76,7 @@ namespace StudentDocumentManagement.Controllers
             var profileDto = new ProfilePageDto
             {
                 DOB = student.DOB,
-                Gender = student.Gender,
+                GenderId = student.GenderId,
                 PhoneNumber = student.PhoneNumber,
                 AlternatePhoneNumber = student.AlternatePhoneNumber,
                 Address = student.Address,

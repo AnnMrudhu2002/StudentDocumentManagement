@@ -22,8 +22,8 @@ namespace StudentDocManagement.Services.Repository
         public async Task<Student?> GetStudentByUserIdAsync(string userId)
         {
             return await _context.Students
-                .Include(s => s.Course)          // navigation property (ok)
-                .Include(s => s.IdProofType)     // navigation property (ok)
+                .Include(s => s.Course)         
+                .Include(s => s.IdProofType)   
                 .FirstOrDefaultAsync(s => s.UserId == userId);
         }
 
@@ -66,7 +66,6 @@ namespace StudentDocManagement.Services.Repository
             }
             else
             {
-                // Prevent editing if admin already Approved
                 if (existing.StatusId == 2)
                 {
                     return (false, "Profile already approved, cannot edit", existing);
