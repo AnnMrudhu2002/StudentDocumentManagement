@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using StudentDocManagement.Entity.Dto;
 using StudentDocManagement.Entity.Models;
 using StudentDocManagement.Services.Interface;
@@ -15,14 +16,14 @@ namespace StudentDocumentManagement.Controllers
         private readonly IDocumentRepository _documentRepository;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IStudentProfileRepository _studentProfileRepository;
+        private readonly AppDbContext _context;
 
-
-        public DocumentController(IDocumentRepository documentRepository, UserManager<ApplicationUser> userManager, IStudentProfileRepository studentProfileRepository)
+        public DocumentController(IDocumentRepository documentRepository, UserManager<ApplicationUser> userManager, IStudentProfileRepository studentProfileRepository,AppDbContext context)
         {
             _documentRepository = documentRepository;
             _userManager = userManager;
             _studentProfileRepository = studentProfileRepository;
-
+            _context = context;
         }
 
 
@@ -55,11 +56,10 @@ namespace StudentDocumentManagement.Controllers
             return Ok(new { message, documentId = document!.DocumentId });
         }
 
-
-
+        //// get student documents
         //[Authorize(Roles = "Student")]
-        //[HttpGet("GetStudentDocuments")]
-        //public async Task<IActionResult> GetStudentDocuments()
+        //[HttpGet("my-documents")]
+        //public async Task<IActionResult> GetMyDocuments()
         //{
         //    var user = await _userManager.GetUserAsync(User);
         //    if (user == null)
@@ -67,17 +67,15 @@ namespace StudentDocumentManagement.Controllers
 
         //    var student = await _studentProfileRepository.GetStudentByUserIdAsync(user.Id);
         //    if (student == null)
-        //        return NotFound(new { message = "Student not found" });
+        //        return NotFound("Student profile not found");
 
-        //    var documents = await _documentRepository.GetStudentDocumentsWithDetailsAsync(student.StudentId);
-        //    return Ok(documents);
+        //    var docs = await _documentRepository.GetStudentDocumentsWithDetailsAsync(student.StudentId);
+        //    return Ok(docs);
         //}
 
-
-        // get student documents
         [Authorize(Roles = "Student")]
-        [HttpGet("my-documents")]
-        public async Task<IActionResult> GetMyDocuments()
+        [HttpGet("GetStudentDocuments")]
+        public async Task<IActionResult> GetStudentDocuments()
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
@@ -85,10 +83,10 @@ namespace StudentDocumentManagement.Controllers
 
             var student = await _studentProfileRepository.GetStudentByUserIdAsync(user.Id);
             if (student == null)
-                return NotFound("Student profile not found");
+                return NotFound(new { message = "Student not found" });
 
-            var docs = await _documentRepository.GetStudentDocumentsWithDetailsAsync(student.StudentId);
-            return Ok(docs);
+            var documents = await _documentRepository.GetStudentDocumentsWithDetailsAsync(student.StudentId);
+            return Ok(documents);
         }
 
 
@@ -165,7 +163,13 @@ namespace StudentDocumentManagement.Controllers
             return Ok(new { message });
         }
 
-
+        [AllowAnonymous]
+        [HttpGet("GetAllDocumentType")]
+        public async Task<ActionResult<IEnumerable<DocumentType>>> GetDocumentTypes()
+        {
+            var types = await _context.DocumentTypes.ToListAsync();
+            return Ok(types);
+        }
 
 
     }

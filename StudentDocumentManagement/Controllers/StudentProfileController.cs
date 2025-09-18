@@ -74,7 +74,8 @@ namespace StudentDocumentManagement.Controllers
             var profileDto = new ProfilePageDto
             {
                 DOB = student.DOB,
-                Gender = student.Gender,
+                GenderId = student.GenderId,
+                GenderName = student.Gender?.Name ?? "",
                 PhoneNumber = student.PhoneNumber,
                 AlternatePhoneNumber = student.AlternatePhoneNumber,
                 Address = student.Address,

@@ -65,7 +65,7 @@ namespace StudentDocManagement.Services.Repository
             };
 
            await _context.Documents.AddAsync(document);
-            await _context.SaveChangesAsync();
+           await _context.SaveChangesAsync();
 
             return (true, "Document uploaded successfully", document);
         }
@@ -73,8 +73,6 @@ namespace StudentDocManagement.Services.Repository
 
         public string? ValidateFile(FileUploadDto fileDto)
         {
-            //if (fileDto.FileStream == null || fileDto.FileSize == 0)
-            //    return "No file uploaded";
 
             const long maxFileSize = 5 * 1024 * 1024; // 5 MB
             if (fileDto.FileSize > maxFileSize)
