@@ -43,6 +43,7 @@ namespace StudentDocumentManagement.Controllers
             {
                 DOB = student.DOB,
                 GenderId = student.GenderId,
+                Name = student.Gender?.Name,
                 PhoneNumber = student.PhoneNumber,
                 AlternatePhoneNumber = student.AlternatePhoneNumber,
                 Address = student.Address,
@@ -73,7 +74,7 @@ namespace StudentDocumentManagement.Controllers
             var profileDto = new ProfilePageDto
             {
                 DOB = student.DOB,
-                Gender = student.Gender,
+                GenderId = student.GenderId,
                 PhoneNumber = student.PhoneNumber,
                 AlternatePhoneNumber = student.AlternatePhoneNumber,
                 Address = student.Address,
@@ -134,7 +135,7 @@ namespace StudentDocumentManagement.Controllers
             // Map entity → DTO
             var result = educationList.Select(e => new StudentEducationDto
             {
-                EducationLevel = e.EducationLevel,   // ensure column exists
+                EducationLevel = e.EducationLevel,
                 InstituteName = e.InstituteName,
                 PassingYear = e.PassingYear,
                 MarksPercentage = e.MarksPercentage

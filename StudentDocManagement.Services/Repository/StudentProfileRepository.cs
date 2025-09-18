@@ -23,7 +23,8 @@ namespace StudentDocManagement.Services.Repository
         {
             return await _context.Students
                 .Include(s => s.Course)          // navigation property (ok)
-                .Include(s => s.IdProofType)     // navigation property (ok)
+                .Include(s => s.IdProofType)
+                .Include(s => s.Gender)
                 .FirstOrDefaultAsync(s => s.UserId == userId);
         }
 
@@ -56,7 +57,7 @@ namespace StudentDocManagement.Services.Repository
                     CourseId = dto.CourseId,
                     StatusId = 1, // Pending
                     CreatedOn = DateTime.UtcNow,
-                    IsAcknowledged = false //initially false
+                    //IsAcknowledged = false //initially false
                 };
 
                 await _context.Students.AddAsync(student);
@@ -201,7 +202,7 @@ namespace StudentDocManagement.Services.Repository
             if (student == null)
                 return (false, "Student not found");
 
-            //check if 3 documents are uploaded
+            ////check if 3 documents are uploaded
             var docCount = await _context.Documents.CountAsync(d => d.StudentId == student.StudentId);
             if (docCount < 3)
                 return (false, "Please upload all required documents before acknowledging");
@@ -211,7 +212,7 @@ namespace StudentDocManagement.Services.Repository
             _context.Students.Update(student);
             await _context.SaveChangesAsync();
 
-            return (true, "Acknowledgment submitted successfully");
+            return (true, "Profile submitted successfully");
         }
 
 

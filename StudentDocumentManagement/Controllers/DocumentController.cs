@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using StudentDocManagement.Entity.Dto;
 using StudentDocManagement.Entity.Models;
 using StudentDocManagement.Services.Interface;
@@ -15,14 +16,14 @@ namespace StudentDocumentManagement.Controllers
         private readonly IDocumentRepository _documentRepository;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IStudentProfileRepository _studentProfileRepository;
-     
+        private readonly AppDbContext _context;
 
-        public DocumentController(IDocumentRepository documentRepository, UserManager<ApplicationUser> userManager, IStudentProfileRepository studentProfileRepository)
+        public DocumentController(IDocumentRepository documentRepository, UserManager<ApplicationUser> userManager, IStudentProfileRepository studentProfileRepository, AppDbContext context)
         {
             _documentRepository = documentRepository;
             _userManager = userManager;
             _studentProfileRepository = studentProfileRepository;
-            
+            _context = context;
         }
 
         [HttpPost("UploadDocument")]
@@ -157,8 +158,15 @@ namespace StudentDocumentManagement.Controllers
             return Ok(new { message });
         }
 
+        // GET: api/DocumentTypes
+        [AllowAnonymous]
+        [HttpGet("GetAllDocumentType")]
+        public async Task<ActionResult<IEnumerable<DocumentType>>> GetDocumentTypes()
+        {
+            var types = await _context.DocumentTypes.ToListAsync();
+            return Ok(types);
+        }
 
-       
 
     }
 }

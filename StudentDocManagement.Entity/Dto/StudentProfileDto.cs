@@ -53,6 +53,7 @@ namespace StudentDocManagement.Entity.Dto
 
         public DateTime DOB { get; set; }
         public int GenderId { get; set; } 
+        public string? Name { get; set; }
         public string PhoneNumber { get; set; } = string.Empty;
         public string? AlternatePhoneNumber { get; set; }
         public string Address { get; set; } = string.Empty;

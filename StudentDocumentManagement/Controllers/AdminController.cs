@@ -75,7 +75,7 @@ public class AdminController : ControllerBase
         {
 
             DOB = student.DOB,
-            Gender = student.Gender,
+            GenderId = student.GenderId,
             PhoneNumber = student.PhoneNumber,
             AlternatePhoneNumber = student.AlternatePhoneNumber,
             Address = student.Address,

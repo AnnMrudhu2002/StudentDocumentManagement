@@ -36,8 +36,5 @@ namespace StudentDocumentManagement.Controllers
 
             return Ok(new { success, message });
         }
-
-
-
     }
 }
