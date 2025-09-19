@@ -58,7 +58,7 @@ namespace StudentDocumentManagement.Controllers
 
         // get student documents
         [Authorize(Roles = "Student")]
-        [HttpGet("my-documents")]
+        [HttpGet("My-documents")]
         public async Task<IActionResult> GetMyDocuments()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -92,7 +92,7 @@ namespace StudentDocumentManagement.Controllers
 
         // download document
         [Authorize(Roles = "Student, Admin")]
-        [HttpGet("download/{documentId}")]
+        [HttpGet("Download/{documentId}")]
         public async Task<IActionResult> DownloadDocument(int documentId)
         {
             var user = await _userManager.GetUserAsync(User);
@@ -108,7 +108,7 @@ namespace StudentDocumentManagement.Controllers
 
 
         // reuplaod document
-        [HttpPost("reupload/{documentId}")]
+        [HttpPost("Reupload/{documentId}")]
         public async Task<IActionResult> ReUploadDocument(int documentId, IFormFile file)
         {
             if (file == null || file.Length == 0)
@@ -118,29 +118,8 @@ namespace StudentDocumentManagement.Controllers
             if (existingDoc == null)
                 return NotFound("Document not found.");
 
-            // Save new file to server
-            var storagePath = Path.Combine(Directory.GetCurrentDirectory(), "FileStorage");
-            if (!Directory.Exists(storagePath))
-                Directory.CreateDirectory(storagePath);
-
-            var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-            var filePath = Path.Combine(storagePath, uniqueFileName);
-
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await file.CopyToAsync(stream);
-            }
-
-            // Update document fields
-            existingDoc.FileName = uniqueFileName;
-            existingDoc.FilePath = filePath;
-            existingDoc.StatusId = 1; // Reset to Pending
-            existingDoc.Remarks = null; // clear remarks on reuploading
-            existingDoc.UploadedOn = DateTime.UtcNow;
-
-            // Update in repository
-            var updated = await _documentRepository.UpdateStatusAsync(existingDoc.DocumentId, existingDoc.StatusId, existingDoc.Remarks);
-            if (!updated)
+            var success = await _documentRepository.ReUploadDocumentAsync(existingDoc, file);
+            if (!success)
                 return BadRequest("Failed to update document.");
 
             return Ok(new { message = "File re-uploaded successfully" });
@@ -148,7 +127,7 @@ namespace StudentDocumentManagement.Controllers
 
 
         // delete document
-        [HttpDelete("{documentId}")]
+        [HttpDelete("DeleteDocument/{documentId}")]
         public async Task<IActionResult> DeleteDocument(int documentId)
         {
             var user = await _userManager.GetUserAsync(User);

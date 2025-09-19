@@ -19,7 +19,7 @@ namespace StudentDocumentManagement.Controllers
         }
 
         // get admin dashboard
-        [HttpGet("summary")]
+        [HttpGet("Summary")]
         public async Task<IActionResult> GetDashboardSummary()
         {
 

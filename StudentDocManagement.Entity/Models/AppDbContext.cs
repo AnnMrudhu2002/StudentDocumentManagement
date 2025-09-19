@@ -97,9 +97,7 @@ namespace StudentDocManagement.Entity.Models
                 .HasForeignKey(po => po.PincodeId);
 
 
-            // ========================
             // Seed Courses
-            // ========================
             modelBuilder.Entity<Course>().HasData(
                 new Course { CourseId = 1, CourseName = "Computer Science" },
                 new Course { CourseId = 2, CourseName = "Information Technology" },
@@ -113,18 +111,14 @@ namespace StudentDocManagement.Entity.Models
                 new Course { CourseId = 10, CourseName = "Environmental Engineering" }
             );
 
-            // ========================
             // Seed Document Types
-            // ========================
             modelBuilder.Entity<DocumentType>().HasData(
                 new DocumentType { DocumentTypeId = 1, TypeName = "ID Proof" },
                 new DocumentType { DocumentTypeId = 2, TypeName = "10th Certificate" },
                 new DocumentType { DocumentTypeId = 3, TypeName = "12th Certificate" }
             );
 
-            // ========================
             // Seed ID Proof Types
-            // ========================
             modelBuilder.Entity<IdProofType>().HasData(
                 new IdProofType { IdProofTypeId = 1, TypeName = "Aadhar Card" },
                 new IdProofType { IdProofTypeId = 2, TypeName = "PAN Card" },
@@ -133,9 +127,8 @@ namespace StudentDocManagement.Entity.Models
 
             );
 
-            // ========================
+     
             // Seed StatusMaster
-            // ========================
             modelBuilder.Entity<StatusMaster>().HasData(
                 // RegistrationStatus
                 new StatusMaster { StatusId = 1, StatusName = "Pending" },
@@ -147,9 +140,7 @@ namespace StudentDocManagement.Entity.Models
 
             );
 
-            // ========================
             // Seed Gender
-            // ========================
 
             modelBuilder.Entity<Gender>().HasData(
                 new Gender { GenderId = 1, Name = "Male" },

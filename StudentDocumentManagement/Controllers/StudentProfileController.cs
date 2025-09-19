@@ -60,10 +60,6 @@ namespace StudentDocumentManagement.Controllers
             return Ok(profileDto);
         }
 
-    
-        
-
-
         [HttpGet("GetProfilePage")]
         public async Task<IActionResult> GetUserProfile()
         {
@@ -85,10 +81,6 @@ namespace StudentDocumentManagement.Controllers
                 AlternatePhoneNumber = student.AlternatePhoneNumber,
                 Address = student.Address,
                 PermanentAddress = student.PermanentAddress,
-                //City = student.City,
-                //District = student.District,
-                //State = student.State,
-                //Pincode = student.Pincode,
                 IdProofTypeId = student.IdProofTypeId,
                 IdProofNumber = student.IdProofNumber,
                 FullName = user.FullName,
@@ -101,12 +93,6 @@ namespace StudentDocumentManagement.Controllers
         }
 
      // allow all authenticated users
-
-      
-
-
-
-
 
         // submit student profile details
         [HttpPost("SubmitProfile")]
@@ -207,7 +193,7 @@ namespace StudentDocumentManagement.Controllers
         }
 
         // get all states
-        [HttpGet("getAllState")]
+        [HttpGet("GetAllState")]
         public async Task<IActionResult> GetStates()
         {
             var states = await _studentProfileRepository.GetAllStatesAsync();
@@ -215,8 +201,8 @@ namespace StudentDocumentManagement.Controllers
         }
 
         // get district by state
-        [HttpGet("{stateId}")]
-        public async Task<IActionResult> GetDistricts(int stateId)
+        [HttpGet("GetDistricts")]
+        public async Task<IActionResult> GetDistricts([FromQuery] int stateId)
         {
             var districts = await _studentProfileRepository.GetDistrictsByStateIdAsync(stateId);
             if (districts == null || !districts.Any())
@@ -226,17 +212,16 @@ namespace StudentDocumentManagement.Controllers
         }
 
         // get pincode by district
-        [HttpGet("pincodes/{districtId}")]
-        public async Task<IActionResult> GetPincodes(int districtId)
+        [HttpGet("Pincodes")]
+        public async Task<IActionResult> GetPincodes([FromQuery] int districtId)
         {
             var pincodes = await _studentProfileRepository.GetPincodesByDistrictIdAsync(districtId);
             return Ok(pincodes);
         }
 
-
         // get post office by pincode
-        [HttpGet("postoffices/{pincodeId}")]
-        public async Task<IActionResult> GetPostOffices(int pincodeId)
+        [HttpGet("Postoffices")]
+        public async Task<IActionResult> GetPostOffices([FromQuery] int pincodeId)
         {
             var offices = await _studentProfileRepository.GetPostOfficesByPincodeIdAsync(pincodeId);
             return Ok(offices);

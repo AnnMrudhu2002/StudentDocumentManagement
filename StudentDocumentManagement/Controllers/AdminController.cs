@@ -23,15 +23,15 @@ public class AdminController : ControllerBase
     }
 
     // get students with pending documents
-    [HttpGet("students-for-approval")]
+    [HttpGet("Students-for-approval")]
     public async Task<IActionResult> GetStudentsForApproval()
     {
         var students = await _adminRepository.GetStudentsForApprovalAsync();
         return Ok(students);
     }
 
-
-    [HttpGet("student/{studentId}/documents")]
+    //get documents of particular student
+    [HttpGet("Student/{studentId}/Documents")]
     public async Task<IActionResult> GetDocumentsByStudentId(int studentId)
     {
         var docs = await _adminRepository.GetDocumentsByStudentIdAsync(studentId);
@@ -39,13 +39,15 @@ public class AdminController : ControllerBase
     }
 
     // approve or reject document
-    [HttpPost("document/{documentId}/update-status")]
+    [HttpPost("Document/{documentId}/Update-status")]
     public async Task<IActionResult> UpdateDocumentStatus(int documentId, [FromQuery] int statusId, [FromQuery] string? remarks)
     {
         var success = await _adminRepository.UpdateDocumentStatusAsync(documentId, statusId, remarks);
         if (!success) return NotFound("Document not found");
         return Ok(new { message = "Status updated successfully" });
     }
+
+    //admin side student-profile and educational details viewing
     [HttpGet("GetProfilePage/{studentId}")]
     public async Task<IActionResult> GetStudentProfile(int studentId)
     {
@@ -59,16 +61,7 @@ public class AdminController : ControllerBase
         if (user == null)
             return NotFound(new { message = "User not found" });
         // fetch student educations
-        var educations = await _context.StudentEducations
-            .Where(e => e.StudentId == studentId)
-            .Select(e => new StudentEducationDto
-            {
-                EducationLevel = e.EducationLevel,
-                InstituteName = e.InstituteName,
-                PassingYear = e.PassingYear,
-                MarksPercentage = e.MarksPercentage
-            })
-            .ToListAsync();
+        var educations = await _adminRepository.GetStudentEducationsAsync(studentId);
 
         // Map to DTO
         var profileDto = new ProfilePageDto
@@ -83,6 +76,10 @@ public class AdminController : ControllerBase
             PermanentAddress = student.PermanentAddress,
             IdProofTypeId = student.IdProofTypeId,
             IdProofNumber = student.IdProofNumber,
+            City = student.City,
+            State = student.State,
+            Pincode = student.Pincode,
+            District = student.District,
             FullName = user.FullName,
             Email = user.Email,
             CourseName = student.Course?.CourseName,
@@ -91,15 +88,5 @@ public class AdminController : ControllerBase
 
         return Ok(profileDto);
     }
-
-    //public async Task<string?> GetStateNameByIdAsync(int stateId)
-    //{
-    //    var state = await _context.states
-    //        .Where(s => s.StateId == stateId)
-    //        .Select(s => s.StateName)
-    //        .FirstOrDefaultAsync();
-
-    //    return state; // returns null if not found
-    //}
 
 }

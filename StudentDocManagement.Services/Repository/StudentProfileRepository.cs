@@ -62,16 +62,6 @@ namespace StudentDocManagement.Services.Repository
             }
             else
             {
-                // Prevent editing if admin already Approved
-                if (existing.StatusId == 2)
-                {
-                    return (false, "Profile already approved, cannot edit", existing);
-                }
-
-                else if (existing.StatusId == 5)
-                {
-                    return (false, "Profile cannot be edited while under review", existing);
-                }
 
                 // Update
                 existing.DOB = dto.DOB;
@@ -117,12 +107,6 @@ namespace StudentDocManagement.Services.Repository
         public async Task<(bool Success, string Message, StudentEducation? Education)>
      SubmitEducationAsync(Student student, StudentEducationDto dto)
         {
-            // Block editing if profile locked
-            if (student.StatusId == 2)
-                return (false, "Profile already approved, cannot edit education details", null);
-            if (student.StatusId == 5)
-                return (false, "Profile cannot be edited while under review", null);
-
             var existing = await _context.StudentEducations
                                          .FirstOrDefaultAsync(e => e.StudentId == student.StudentId &&
                                                                    e.EducationLevel == dto.EducationLevel);
