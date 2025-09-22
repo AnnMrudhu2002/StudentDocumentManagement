@@ -36,9 +36,9 @@ namespace StudentDocumentManagement.Controllers
 
             var student = await _studentProfileRepository.GetStudentByUserIdAsync(user.Id);
             if (student is null)
-                return NotFound(new { message = "Profile not found" });
+                return Ok(null);
 
-           
+
 
             var profileDto = new StudentProfileDto
             {
@@ -129,7 +129,7 @@ namespace StudentDocumentManagement.Controllers
             var educationList = await _studentProfileRepository.GetEducationByStudentIdAsync(student.StudentId);
 
             if (educationList == null || educationList.Count == 0)
-                return NotFound(new { message = "Education details not found" });
+                return Ok(new List<StudentEducationDto>());
 
             var result = educationList.Select(e => new StudentEducationDto
             {
