@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using StudentDocManagement.Entity.Dto;
 using StudentDocManagement.Entity.Models;
 
@@ -86,6 +87,48 @@ public class AdminController : ControllerBase
         };
 
         return Ok(profileDto);
+    }
+    [HttpGet("GetDocuments")]
+    public async Task<IActionResult> GetDocuments([FromQuery] string? branch, [FromQuery] string? name, [FromQuery] string? registerNo)
+    {
+        var query = _context.Documents
+            .Include(d => d.Student).ThenInclude(s => s.Course)
+            .AsQueryable();
+
+        //  Apply filters (case-insensitive)
+        if (!string.IsNullOrEmpty(branch))
+            query = query.Where(d => d.Student.Course.CourseName.ToLower().Contains(branch.ToLower()));
+
+        if (!string.IsNullOrEmpty(name))
+            query = query.Where(d => d.Student.User.FullName.ToLower().Contains(name.ToLower()));
+
+        if (!string.IsNullOrEmpty(registerNo))
+            query = query.Where(d => d.Student.RegisterNo.ToLower().Contains(registerNo.ToLower()));
+
+     
+        var docs = await query.Select(d => new {
+            d.DocumentId,
+            d.FileName,
+            d.FilePath,
+            Status = d.Status.StatusName,
+            d.UploadedOn,
+            StudentName = d.Student.User.FullName,
+            RegisterNo = d.Student.RegisterNo,
+            Branch = d.Student.Course.CourseName,
+            DocumentTypeName = d.DocumentType.TypeName 
+        }).ToListAsync();
+
+
+        return Ok(docs);
+    }
+
+    [HttpGet("Courses")]
+    public async Task<IActionResult> GetCourses()
+    {
+        var list = await _context.Courses
+                                 .Select(x => new { x.CourseId, x.CourseName })
+                                 .ToListAsync();
+        return Ok(list);
     }
 
 }

@@ -172,6 +172,7 @@ namespace StudentDocumentManagement.Controllers
         }
 
         // get all courses
+        [Authorize(Roles = "Student, Admin")]
         [HttpGet("Courses")]
         public async Task<IActionResult> GetCourses()
         {
