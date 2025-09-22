@@ -1,6 +1,4 @@
-﻿using Mapster;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -40,6 +38,8 @@ namespace StudentDocumentManagement.Controllers
             if (student is null)
                 return NotFound(new { message = "Profile not found" });
 
+           
+
             var profileDto = new StudentProfileDto
             {
                 DOB = student.DOB,
@@ -49,9 +49,9 @@ namespace StudentDocumentManagement.Controllers
                 Address = student.Address,
                 PermanentAddress = student.PermanentAddress,
                 City = student.City,
-                District = student.District,
                 State = student.State,
                 Pincode = student.Pincode,
+                District = student.District,
                 IdProofTypeId = student.IdProofTypeId,
                 IdProofNumber = student.IdProofNumber,
                 CourseId = student.CourseId
@@ -59,8 +59,6 @@ namespace StudentDocumentManagement.Controllers
 
             return Ok(profileDto);
         }
-
-
         [HttpGet("GetProfilePage")]
         public async Task<IActionResult> GetUserProfile()
         {
@@ -81,10 +79,10 @@ namespace StudentDocumentManagement.Controllers
                 AlternatePhoneNumber = student.AlternatePhoneNumber,
                 Address = student.Address,
                 PermanentAddress = student.PermanentAddress,
-                City = student.City,
-                District = student.District,
-                State = student.State,
-                Pincode = student.Pincode,
+                //City = student.City,
+                //District = student.District,
+                //State = student.State,
+                //Pincode = student.Pincode,
                 IdProofTypeId = student.IdProofTypeId,
                 IdProofNumber = student.IdProofNumber,
                 FullName = user.FullName,

@@ -1,9 +1,5 @@
-﻿using Azure.Core;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.Data;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Win32;
 using StudentDocManagement.Entity.Dto;
 using StudentDocManagement.Entity.Models;
 using StudentDocManagement.Services.Interface;
@@ -126,7 +122,8 @@ namespace StudentDocumentManagement.Controllers
             return Ok(new { message = "Admin Registration successful", userId = user.Id });
         }
 
-        [HttpPost("Login")]
+    
+    [HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody] StudentDocManagement.Entity.Dto.LoginDto request)
         {
             // Find user by email
@@ -160,6 +157,5 @@ namespace StudentDocumentManagement.Controllers
             return Ok(userInfo);
 
         }
-
     }
 }

@@ -1,17 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
 using StudentDocManagement.Entity.Dto;
 using StudentDocManagement.Entity.Models;
-using StudentDocManagement.Entity.Models;
 using StudentDocManagement.Services.Interface;
-using StudentDocManagement.Services.Interface;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace StudentDocManagement.Services.Repository
 {
@@ -65,7 +56,7 @@ namespace StudentDocManagement.Services.Repository
             };
 
            await _context.Documents.AddAsync(document);
-            await _context.SaveChangesAsync();
+           await _context.SaveChangesAsync();
 
             return (true, "Document uploaded successfully", document);
         }
@@ -73,8 +64,6 @@ namespace StudentDocManagement.Services.Repository
 
         public string? ValidateFile(FileUploadDto fileDto)
         {
-            //if (fileDto.FileStream == null || fileDto.FileSize == 0)
-            //    return "No file uploaded";
 
             const long maxFileSize = 5 * 1024 * 1024; // 5 MB
             if (fileDto.FileSize > maxFileSize)

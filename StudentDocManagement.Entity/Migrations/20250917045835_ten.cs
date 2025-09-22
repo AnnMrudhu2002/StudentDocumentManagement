@@ -12,9 +12,9 @@ namespace StudentDocManagement.Entity.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "Gender",
-                table: "Student");
+            //migrationBuilder.DropColumn(
+            //    name: "Gender",
+            //    table: "Student");
 
             migrationBuilder.AddColumn<int>(
                 name: "GenderId",

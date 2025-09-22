@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using StudentDocManagement.Entity.Dto;
 using StudentDocManagement.Services.Interface;
@@ -40,8 +39,5 @@ namespace StudentDocumentManagement.Controllers
 
             return Ok(new { success, message });
         }
-
-
-
     }
 }

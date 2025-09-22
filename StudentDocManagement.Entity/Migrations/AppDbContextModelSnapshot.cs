@@ -681,6 +681,9 @@ namespace StudentDocManagement.Entity.Migrations
                     b.Property<int>("IdProofTypeId")
                         .HasColumnType("int");
 
+                    b.Property<bool>("IsAcknowledged")
+                        .HasColumnType("bit");
+
                     b.Property<string>("PermanentAddress")
                         .IsRequired()
                         .HasMaxLength(300)
