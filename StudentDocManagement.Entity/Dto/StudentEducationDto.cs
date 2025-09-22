@@ -13,7 +13,7 @@ namespace StudentDocManagement.Entity.Dto
         public string InstituteName { get; set; } = string.Empty;
 
         [Required]
-        [Range(1900, 2100, ErrorMessage = "Passing Year must be between 1900 and 2100")]
+        [MaxYear(ErrorMessage = "Passing Year cannot be in the future")]
         public int PassingYear { get; set; }
 
         [Required]
@@ -27,6 +27,19 @@ namespace StudentDocManagement.Entity.Dto
     {
         [Required]
         public List<StudentEducationDto> EducationDetails { get; set; } = new();
+    }
+
+
+    public class MaxYearAttribute : ValidationAttribute
+    {
+        public override bool IsValid(object? value)
+        {
+            if (value is int year)
+            {
+                return year <= DateTime.Now.Year;
+            }
+            return true;
+        }
     }
 
 }
