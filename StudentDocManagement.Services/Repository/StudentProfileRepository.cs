@@ -51,7 +51,7 @@ namespace StudentDocManagement.Services.Repository
                     IdProofNumber = dto.IdProofNumber,
                     CourseId = dto.CourseId,
                     StatusId = 1, // Pending
-                    CreatedOn = DateTime.UtcNow,
+                    CreatedOn = DateTime.Now,
                     //IsAcknowledged = false //initially false
                 };
 
@@ -78,7 +78,7 @@ namespace StudentDocManagement.Services.Repository
                 existing.IdProofNumber = dto.IdProofNumber;
                 existing.CourseId = dto.CourseId;
                 existing.StatusId = 1; // Reset to pending
-                existing.UpdatedOn = DateTime.UtcNow;
+                existing.UpdatedOn = DateTime.Now;
 
                 _context.Students.Update(existing);
                 await _context.SaveChangesAsync();
@@ -120,7 +120,7 @@ namespace StudentDocManagement.Services.Repository
                     InstituteName = dto.InstituteName,
                     PassingYear = dto.PassingYear,
                     MarksPercentage = dto.MarksPercentage,
-                    CreatedOn = DateTime.UtcNow
+                    CreatedOn = DateTime.Now
                 };
 
                 await _context.StudentEducations.AddAsync(education);
@@ -133,7 +133,7 @@ namespace StudentDocManagement.Services.Repository
                 existing.InstituteName = dto.InstituteName;
                 existing.PassingYear = dto.PassingYear;
                 existing.MarksPercentage = dto.MarksPercentage;
-                existing.UpdatedOn = DateTime.UtcNow;
+                existing.UpdatedOn = DateTime.Now;
 
                 _context.StudentEducations.Update(existing);
                 await _context.SaveChangesAsync();

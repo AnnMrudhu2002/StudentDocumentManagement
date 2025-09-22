@@ -53,7 +53,7 @@ namespace StudentDocManagement.Services.Repository
                 FileName = uniqueFileName,
                 FilePath = filePath,
                 StatusId = 1, // Pending
-                UploadedOn = DateTime.UtcNow
+                UploadedOn = DateTime.Now
             };
 
            await _context.Documents.AddAsync(document);
@@ -168,7 +168,7 @@ namespace StudentDocManagement.Services.Repository
             doc.StatusId = statusId;
             doc.Remarks = remarks;
             if (statusId == 2) // Example: 2 = Approved
-                doc.ApprovedOn = DateTime.UtcNow;
+                doc.ApprovedOn = DateTime.Now;
 
             _context.Documents.Update(doc);
             await _context.SaveChangesAsync();
@@ -196,7 +196,7 @@ namespace StudentDocManagement.Services.Repository
                 existingDoc.FilePath = filePath;
                 existingDoc.StatusId = 1; // Reset to Pending
                 existingDoc.Remarks = null; // Clear remarks
-                existingDoc.UploadedOn = DateTime.UtcNow;
+                existingDoc.UploadedOn = DateTime.Now;
 
                 _context.Documents.Update(existingDoc);
                 await _context.SaveChangesAsync();

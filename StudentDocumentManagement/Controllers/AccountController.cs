@@ -122,7 +122,8 @@ namespace StudentDocumentManagement.Controllers
             return Ok(new { message = "Admin Registration successful", userId = user.Id });
         }
 
-        [HttpPost("Login")]
+    
+    [HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody] StudentDocManagement.Entity.Dto.LoginDto request)
         {
             // Find user by email
@@ -156,6 +157,5 @@ namespace StudentDocumentManagement.Controllers
             return Ok(userInfo);
 
         }
-
     }
 }

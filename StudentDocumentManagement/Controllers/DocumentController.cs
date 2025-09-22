@@ -56,6 +56,25 @@ namespace StudentDocumentManagement.Controllers
             return Ok(new { message, documentId = document!.DocumentId });
         }
 
+
+
+        //[Authorize(Roles = "Student")]
+        //[HttpGet("GetStudentDocuments")]
+        //public async Task<IActionResult> GetStudentDocuments()
+        //{
+        //    var user = await _userManager.GetUserAsync(User);
+        //    if (user == null)
+        //        return Unauthorized(new { message = "User not found" });
+
+        //    var student = await _studentProfileRepository.GetStudentByUserIdAsync(user.Id);
+        //    if (student == null)
+        //        return NotFound(new { message = "Student not found" });
+
+        //    var documents = await _documentRepository.GetStudentDocumentsWithDetailsAsync(student.StudentId);
+        //    return Ok(documents);
+        //}
+
+
         // get student documents
         [Authorize(Roles = "Student")]
         [HttpGet("My-documents")]
