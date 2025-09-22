@@ -38,8 +38,6 @@ public class AdminRepository : IAdminRepository
                 DocumentTypeName = d.DocumentType!.TypeName,
                 StatusName = d.Status!.StatusName,
                 Remarks = d.Remarks,
-                UploadedOn = d.UploadedOn,
-                FileName = d.FileName
             })
             .ToListAsync();
     }
@@ -59,7 +57,7 @@ public class AdminRepository : IAdminRepository
         if (statusId == 2)
         {
             doc.Remarks = remarks;
-            doc.ApprovedOn = DateTime.UtcNow;
+            doc.ApprovedOn = DateTime.Now;
         }
         _context.Documents.Update(doc);
         await _context.SaveChangesAsync();
@@ -73,6 +71,19 @@ public class AdminRepository : IAdminRepository
             .Include(s => s.Course)
              .Include(s => s.Gender)
             .FirstOrDefaultAsync(s => s.StudentId == studentId);
+    }
+    public async Task<List<StudentEducationDto>> GetStudentEducationsAsync(int studentId)
+    {
+        return await _context.StudentEducations
+            .Where(e => e.StudentId == studentId)
+            .Select(e => new StudentEducationDto
+            {
+                EducationLevel = e.EducationLevel,
+                InstituteName = e.InstituteName,
+                PassingYear = e.PassingYear,
+                MarksPercentage = e.MarksPercentage
+            })
+            .ToListAsync();
     }
 
 }

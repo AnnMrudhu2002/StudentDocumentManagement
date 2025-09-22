@@ -77,7 +77,7 @@ namespace StudentDocumentManagement.Controllers
 
         // get student documents
         [Authorize(Roles = "Student")]
-        [HttpGet("my-documents")]
+        [HttpGet("My-documents")]
         public async Task<IActionResult> GetMyDocuments()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -111,8 +111,8 @@ namespace StudentDocumentManagement.Controllers
 
         // download document
         [Authorize(Roles = "Student, Admin")]
-        [HttpGet("download/{documentId}")]
-        public async Task<IActionResult> DownloadDocument(int documentId)
+        [HttpGet("Download")]
+        public async Task<IActionResult> DownloadDocument([FromQuery] int documentId)
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
@@ -126,9 +126,10 @@ namespace StudentDocumentManagement.Controllers
         }
 
 
+
         // reuplaod document
-        [HttpPost("reupload/{documentId}")]
-        public async Task<IActionResult> ReUploadDocument(int documentId, IFormFile file)
+        [HttpPost("Reupload")]
+        public async Task<IActionResult> ReUploadDocument([FromQuery] int documentId, IFormFile file)
         {
             if (file == null || file.Length == 0)
                 return BadRequest("No file uploaded.");
@@ -137,38 +138,18 @@ namespace StudentDocumentManagement.Controllers
             if (existingDoc == null)
                 return NotFound("Document not found.");
 
-            // Save new file to server
-            var storagePath = Path.Combine(Directory.GetCurrentDirectory(), "FileStorage");
-            if (!Directory.Exists(storagePath))
-                Directory.CreateDirectory(storagePath);
-
-            var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-            var filePath = Path.Combine(storagePath, uniqueFileName);
-
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await file.CopyToAsync(stream);
-            }
-
-            // Update document fields
-            existingDoc.FileName = uniqueFileName;
-            existingDoc.FilePath = filePath;
-            existingDoc.StatusId = 1; // Reset to Pending
-            existingDoc.Remarks = null; // clear remarks on reuploading
-            existingDoc.UploadedOn = DateTime.UtcNow;
-
-            // Update in repository
-            var updated = await _documentRepository.UpdateStatusAsync(existingDoc.DocumentId, existingDoc.StatusId, existingDoc.Remarks);
-            if (!updated)
+            var success = await _documentRepository.ReUploadDocumentAsync(existingDoc, file);
+            if (!success)
                 return BadRequest("Failed to update document.");
 
             return Ok(new { message = "File re-uploaded successfully" });
         }
 
 
+
         // delete document
-        [HttpDelete("{documentId}")]
-        public async Task<IActionResult> DeleteDocument(int documentId)
+        [HttpDelete("DeleteDocument")]
+        public async Task<IActionResult> DeleteDocument([FromQuery] int documentId)
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
@@ -181,6 +162,7 @@ namespace StudentDocumentManagement.Controllers
 
             return Ok(new { message });
         }
+
 
         [AllowAnonymous]
         [HttpGet("GetAllDocumentType")]

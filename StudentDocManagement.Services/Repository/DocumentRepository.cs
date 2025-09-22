@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using StudentDocManagement.Entity.Dto;
 using StudentDocManagement.Entity.Models;
@@ -52,7 +53,7 @@ namespace StudentDocManagement.Services.Repository
                 FileName = uniqueFileName,
                 FilePath = filePath,
                 StatusId = 1, // Pending
-                UploadedOn = DateTime.UtcNow
+                UploadedOn = DateTime.Now
             };
 
            await _context.Documents.AddAsync(document);
@@ -125,11 +126,10 @@ namespace StudentDocManagement.Services.Repository
                 .Select(d => new StudentDocumentDto
                 {
                     DocumentId = d.DocumentId,
-                    DocumentTypeName = d.DocumentType.TypeName, // assumes you have TypeName field
-                    StatusName = d.Status.StatusName,          // assumes you have StatusName field
+                    DocumentTypeName = d.DocumentType.TypeName, 
+                    StatusName = d.Status.StatusName,          
                     Remarks = d.Remarks,
                     UploadedOn = d.UploadedOn,
-                    FileName = d.FileName,
                     DocumentTypeId = d.DocumentTypeId
                 })
                 .ToListAsync();
@@ -168,33 +168,46 @@ namespace StudentDocManagement.Services.Repository
             doc.StatusId = statusId;
             doc.Remarks = remarks;
             if (statusId == 2) // Example: 2 = Approved
-                doc.ApprovedOn = DateTime.UtcNow;
+                doc.ApprovedOn = DateTime.Now;
 
             _context.Documents.Update(doc);
             await _context.SaveChangesAsync();
             return true;
         }
 
-        ////list uploaded files
-        //public async Task<IEnumerable<StudentDocumentDto>> GetStudentDocumentDetails(int studentId)
-        //{
-        //    return await _context.Documents
-        //        .Include(d => d.DocumentType)
-        //        .Include(d => d.Status)
-        //        .Where(d => d.StudentId == studentId && studentId != 3)
-        //        .Select(d => new StudentDocumentDto
-        //        {
-        //            DocumentId = d.DocumentId,
-        //            DocumentTypeName = d.DocumentType.TypeName, // assumes you have TypeName field
-        //            StatusName = d.Status.StatusName,          // assumes you have StatusName field
-        //            Remarks = d.Remarks,
-        //            UploadedOn = d.UploadedOn,
-        //            FileName = d.FileName
-        //        })
-        //        .ToListAsync();
-        //}
+        public async Task<bool> ReUploadDocumentAsync(Document existingDoc, IFormFile file)
+        {
+            try
+            {
+                // Ensure storage folder exists
+                var storagePath = Path.Combine(Directory.GetCurrentDirectory(), "FileStorage");
+                if (!Directory.Exists(storagePath))
+                    Directory.CreateDirectory(storagePath);
 
-        //}
+                // Save new file
+                var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                var filePath = Path.Combine(storagePath, uniqueFileName);
+
+                await using var stream = new FileStream(filePath, FileMode.Create);
+                await file.CopyToAsync(stream);
+
+                // Update document fields
+                existingDoc.FileName = uniqueFileName;
+                existingDoc.FilePath = filePath;
+                existingDoc.StatusId = 1; // Reset to Pending
+                existingDoc.Remarks = null; // Clear remarks
+                existingDoc.UploadedOn = DateTime.Now;
+
+                _context.Documents.Update(existingDoc);
+                await _context.SaveChangesAsync();
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
 
 
         public async Task<(bool Success, string Message)> DeleteDocumentAsync(ApplicationUser user, int documentId)

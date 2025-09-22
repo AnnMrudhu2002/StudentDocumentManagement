@@ -51,7 +51,7 @@ namespace StudentDocManagement.Services.Repository
                     IdProofNumber = dto.IdProofNumber,
                     CourseId = dto.CourseId,
                     StatusId = 1, // Pending
-                    CreatedOn = DateTime.UtcNow,
+                    CreatedOn = DateTime.Now,
                     //IsAcknowledged = false //initially false
                 };
 
@@ -62,16 +62,6 @@ namespace StudentDocManagement.Services.Repository
             }
             else
             {
-                // Prevent editing if admin already Approved
-                if (existing.StatusId == 2)
-                {
-                    return (false, "Profile already approved, cannot edit", existing);
-                }
-
-                else if (existing.StatusId == 5)
-                {
-                    return (false, "Profile cannot be edited while under review", existing);
-                }
 
                 // Update
                 existing.DOB = dto.DOB;
@@ -88,7 +78,7 @@ namespace StudentDocManagement.Services.Repository
                 existing.IdProofNumber = dto.IdProofNumber;
                 existing.CourseId = dto.CourseId;
                 existing.StatusId = 1; // Reset to pending
-                existing.UpdatedOn = DateTime.UtcNow;
+                existing.UpdatedOn = DateTime.Now;
 
                 _context.Students.Update(existing);
                 await _context.SaveChangesAsync();
@@ -117,12 +107,6 @@ namespace StudentDocManagement.Services.Repository
         public async Task<(bool Success, string Message, StudentEducation? Education)>
      SubmitEducationAsync(Student student, StudentEducationDto dto)
         {
-            // Block editing if profile locked
-            if (student.StatusId == 2)
-                return (false, "Profile already approved, cannot edit education details", null);
-            if (student.StatusId == 5)
-                return (false, "Profile cannot be edited while under review", null);
-
             var existing = await _context.StudentEducations
                                          .FirstOrDefaultAsync(e => e.StudentId == student.StudentId &&
                                                                    e.EducationLevel == dto.EducationLevel);
@@ -136,7 +120,7 @@ namespace StudentDocManagement.Services.Repository
                     InstituteName = dto.InstituteName,
                     PassingYear = dto.PassingYear,
                     MarksPercentage = dto.MarksPercentage,
-                    CreatedOn = DateTime.UtcNow
+                    CreatedOn = DateTime.Now
                 };
 
                 await _context.StudentEducations.AddAsync(education);
@@ -149,7 +133,7 @@ namespace StudentDocManagement.Services.Repository
                 existing.InstituteName = dto.InstituteName;
                 existing.PassingYear = dto.PassingYear;
                 existing.MarksPercentage = dto.MarksPercentage;
-                existing.UpdatedOn = DateTime.UtcNow;
+                existing.UpdatedOn = DateTime.Now;
 
                 _context.StudentEducations.Update(existing);
                 await _context.SaveChangesAsync();
