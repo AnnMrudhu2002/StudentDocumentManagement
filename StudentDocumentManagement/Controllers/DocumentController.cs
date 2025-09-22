@@ -92,8 +92,8 @@ namespace StudentDocumentManagement.Controllers
 
         // download document
         [Authorize(Roles = "Student, Admin")]
-        [HttpGet("Download/{documentId}")]
-        public async Task<IActionResult> DownloadDocument(int documentId)
+        [HttpGet("Download")]
+        public async Task<IActionResult> DownloadDocument([FromQuery] int documentId)
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
@@ -107,9 +107,10 @@ namespace StudentDocumentManagement.Controllers
         }
 
 
+
         // reuplaod document
-        [HttpPost("Reupload/{documentId}")]
-        public async Task<IActionResult> ReUploadDocument(int documentId, IFormFile file)
+        [HttpPost("Reupload")]
+        public async Task<IActionResult> ReUploadDocument([FromQuery] int documentId, IFormFile file)
         {
             if (file == null || file.Length == 0)
                 return BadRequest("No file uploaded.");
@@ -126,9 +127,10 @@ namespace StudentDocumentManagement.Controllers
         }
 
 
+
         // delete document
-        [HttpDelete("DeleteDocument/{documentId}")]
-        public async Task<IActionResult> DeleteDocument(int documentId)
+        [HttpDelete("DeleteDocument")]
+        public async Task<IActionResult> DeleteDocument([FromQuery] int documentId)
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
@@ -141,6 +143,7 @@ namespace StudentDocumentManagement.Controllers
 
             return Ok(new { message });
         }
+
 
         [AllowAnonymous]
         [HttpGet("GetAllDocumentType")]

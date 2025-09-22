@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using StudentDocManagement.Entity.Dto;
 using StudentDocManagement.Entity.Models;
 
@@ -48,8 +47,8 @@ public class AdminController : ControllerBase
     }
 
     //admin side student-profile and educational details viewing
-    [HttpGet("GetProfilePage/{studentId}")]
-    public async Task<IActionResult> GetStudentProfile(int studentId)
+    [HttpGet("GetProfilePage")]
+    public async Task<IActionResult> GetStudentProfile([FromQuery] int studentId)
     {
         // Fetch student by ID
         var student = await _adminRepository.GetStudentByIdAsync(studentId);
@@ -60,13 +59,13 @@ public class AdminController : ControllerBase
         var user = await _userManager.FindByIdAsync(student.UserId);
         if (user == null)
             return NotFound(new { message = "User not found" });
+
         // fetch student educations
         var educations = await _adminRepository.GetStudentEducationsAsync(studentId);
 
         // Map to DTO
         var profileDto = new ProfilePageDto
         {
-
             DOB = student.DOB,
             GenderId = student.GenderId,
             GenderName = student.Gender?.Name,
