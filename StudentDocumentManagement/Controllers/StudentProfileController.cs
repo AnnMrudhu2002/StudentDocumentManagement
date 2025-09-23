@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -254,21 +255,28 @@ namespace StudentDocumentManagement.Controllers
             return Ok(new { message });
         }
 
-        // GET: api/student/document-status/{studentId}
-        [HttpGet("document-status/{studentId}")]
-        public async Task<IActionResult> GetDocumentStatus(int studentId)
+        [HttpGet("CheckAllDocsApproved")]
+        public async Task<IActionResult> CheckAllDocsApproved()
         {
-            // Fetch student documents
-            var documents = await _studentProfileRepository.GetDocumentsByStudentId(studentId);
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return Unauthorized();
 
-            if (documents == null || !documents.Any())
-                return Ok(new { status = 0 }); // 0 = not uploaded
+            var student = await _studentProfileRepository.GetStudentByUserIdAsync(user.Id);
+            if (student == null)
+                return Ok(new { allApproved = false });
 
-            // Compare StatusId instead of Status object
-            bool allApproved = documents.All(d => d.Status.StatusId == 2);
+            if (!student.IsAcknowledged)
+                return Ok(new { allApproved = false });
 
-            return Ok(new { status = allApproved ? 2 : 1 }); // 1 = pending, 2 = approved
+            // Fetch all documents for the student
+            var documents = await _studentProfileRepository.GetDocumentsByStudentIdAsync(student.StudentId);
+
+            // Check if at least one document is approved
+            var hasApprovedDoc = documents != null && documents.Any(d => d.Status != null && d.Status.StatusName == "Approved");
+
+            return Ok(new { allApproved = hasApprovedDoc });
         }
+
 
 
     }

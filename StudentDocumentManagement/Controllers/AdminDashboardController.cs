@@ -27,14 +27,16 @@ namespace StudentDocumentManagement.Controllers
                 .Where(u => u.StatusId == 1) // Pending
                 .CountAsync();
 
-            var approved = await _context.Users
-                .Where(u => u.StatusId == 2) // Approved
-                .CountAsync();
+
+
+            var studentsWithPendingDocs = await _context.Students
+        .Where(s => s.Documents.Any(d => d.StatusId == 1))
+          .CountAsync();
 
             return Ok(new
             {
                 PendingStudents = pending,
-                ApprovedStudents = approved
+                StudentsWithPendingDocuments = studentsWithPendingDocs
             });
         }
     }

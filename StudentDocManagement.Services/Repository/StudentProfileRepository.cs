@@ -145,9 +145,18 @@ namespace StudentDocManagement.Services.Repository
         }
 
 
+        //public async Task<IEnumerable<State>> GetAllStatesAsync()
+        //{
+        //    return await _context.states
+        //        .OrderBy(s => s.StateName)
+        //        .ToListAsync();
+        //}
         public async Task<IEnumerable<State>> GetAllStatesAsync()
         {
+            var excludedIds = new List<int> { 17, 21, 27, 4, 37, 2, 33, 34, 24 };
+
             return await _context.states
+                .Where(s => !excludedIds.Contains(s.StateId))
                 .OrderBy(s => s.StateName)
                 .ToListAsync();
         }
@@ -196,14 +205,14 @@ namespace StudentDocManagement.Services.Repository
             return (true, "Profile submitted successfully");
         }
 
-        public async Task<List<Document>> GetDocumentsByStudentId(int studentId)
+        public async Task<List<Document>> GetDocumentsByStudentIdAsync(int studentId)
         {
             return await _context.Documents
+                .Include(d => d.Status)  // Include StatusMaster for checking approval
                 .Where(d => d.StudentId == studentId)
+                .AsNoTracking()          // Read-only query
                 .ToListAsync();
         }
-
-
 
     }
 }
