@@ -24,10 +24,10 @@ namespace StudentDocManagement.Entity.Models
         public int StatusId { get; set; }
         public StatusMaster? Status { get; set; }
 
-        [StringLength(500)]
+        [StringLength(200)]
         public string? Remarks { get; set; }
 
-        public DateTime UploadedOn { get; set; } = DateTime.UtcNow;
+        public DateTime UploadedOn { get; set; } = DateTime.Now;
         public DateTime? ApprovedOn { get; set; }
     }
 

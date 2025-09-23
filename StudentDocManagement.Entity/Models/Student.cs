@@ -53,8 +53,8 @@ namespace StudentDocManagement.Entity.Models
         public int StatusId { get; set; }
         public StatusMaster? Status { get; set; }
 
-        public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
-        public DateTime UpdatedOn { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedOn { get; set; } = DateTime.Now;
+        public DateTime UpdatedOn { get; set; } = DateTime.Now;
 
         
         public bool IsAcknowledged { get; set; } = false;
