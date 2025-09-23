@@ -27,7 +27,7 @@ namespace StudentDocManagement.Entity.Models
         [StringLength(200)]
         public string? Remarks { get; set; }
 
-        public DateTime UploadedOn { get; set; } = DateTime.UtcNow;
+        public DateTime UploadedOn { get; set; } = DateTime.Now;
         public DateTime? ApprovedOn { get; set; }
     }
 

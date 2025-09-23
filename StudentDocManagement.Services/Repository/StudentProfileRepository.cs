@@ -17,9 +17,11 @@ namespace StudentDocManagement.Services.Repository
         public async Task<Student?> GetStudentByUserIdAsync(string userId)
         {
             return await _context.Students
-                .Include(s => s.Course)          // navigation property (ok)
+                .Include(s => s.Course)          
                 .Include(s => s.IdProofType)
                 .Include(s => s.Gender)
+                .Include(s => s.StudentEducations)   
+                .Include(s => s.Documents)
                 .FirstOrDefaultAsync(s => s.UserId == userId);
         }
 

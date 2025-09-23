@@ -19,7 +19,8 @@ namespace StudentDocumentManagement.Controllers
         private readonly AppDbContext _context;
         private readonly IWebHostEnvironment _env;
 
-        public DocumentController(IDocumentRepository documentRepository, UserManager<ApplicationUser> userManager, IStudentProfileRepository studentProfileRepository,AppDbContext context, IWebHostEnvironment env)
+        public DocumentController(IDocumentRepository documentRepository, UserManager<ApplicationUser> userManager,
+            IStudentProfileRepository studentProfileRepository,AppDbContext context, IWebHostEnvironment env)
         {
             _documentRepository = documentRepository;
             _userManager = userManager;
