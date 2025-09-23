@@ -253,5 +253,23 @@ namespace StudentDocumentManagement.Controllers
 
             return Ok(new { message });
         }
+
+        // GET: api/student/document-status/{studentId}
+        [HttpGet("document-status/{studentId}")]
+        public async Task<IActionResult> GetDocumentStatus(int studentId)
+        {
+            // Fetch student documents
+            var documents = await _studentProfileRepository.GetDocumentsByStudentId(studentId);
+
+            if (documents == null || !documents.Any())
+                return Ok(new { status = 0 }); // 0 = not uploaded
+
+            // Compare StatusId instead of Status object
+            bool allApproved = documents.All(d => d.Status.StatusId == 2);
+
+            return Ok(new { status = allApproved ? 2 : 1 }); // 1 = pending, 2 = approved
+        }
+
+
     }
 }

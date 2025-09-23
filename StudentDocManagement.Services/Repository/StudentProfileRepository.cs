@@ -194,6 +194,12 @@ namespace StudentDocManagement.Services.Repository
             return (true, "Profile submitted successfully");
         }
 
+        public async Task<List<Document>> GetDocumentsByStudentId(int studentId)
+        {
+            return await _context.Documents
+                .Where(d => d.StudentId == studentId)
+                .ToListAsync();
+        }
 
 
 
