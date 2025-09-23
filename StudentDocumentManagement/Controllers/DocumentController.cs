@@ -17,13 +17,15 @@ namespace StudentDocumentManagement.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IStudentProfileRepository _studentProfileRepository;
         private readonly AppDbContext _context;
+        private readonly IWebHostEnvironment _env;
 
-        public DocumentController(IDocumentRepository documentRepository, UserManager<ApplicationUser> userManager, IStudentProfileRepository studentProfileRepository,AppDbContext context)
+        public DocumentController(IDocumentRepository documentRepository, UserManager<ApplicationUser> userManager, IStudentProfileRepository studentProfileRepository,AppDbContext context, IWebHostEnvironment env)
         {
             _documentRepository = documentRepository;
             _userManager = userManager;
             _studentProfileRepository = studentProfileRepository;
             _context = context;
+            _env = env;
         }
 
 
@@ -172,6 +174,37 @@ namespace StudentDocumentManagement.Controllers
             return Ok(types);
         }
 
+        [Authorize(Roles = "Student, Admin")]
+        [HttpGet("view/{documentId}")]
+        public async Task<IActionResult> ViewDocument(int documentId)
+        {
+            // Get current user (for authorization)
+            var user = await _userManager.GetUserAsync(User);
 
+            var result = await _documentRepository.GetDocumentForDownloadAsync(documentId, user);
+            if (result == null)
+                return NotFound("Document not found or access denied");
+
+            var (fileBytes, fileName) = result.Value;
+
+            // Determine content type
+            var contentType = GetContentType(fileName);
+
+            // Stream file inline (browser opens PDF/image)
+            return File(fileBytes, contentType);
+        }
+
+        private string GetContentType(string fileName)
+        {
+            var ext = Path.GetExtension(fileName).ToLowerInvariant();
+            return ext switch
+            {
+                ".pdf" => "application/pdf",
+                ".jpg" => "image/jpeg",
+                ".jpeg" => "image/jpeg",
+                ".png" => "image/png",
+                _ => "application/octet-stream"
+            };
+        }
     }
 }

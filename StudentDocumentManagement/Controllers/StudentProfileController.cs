@@ -11,7 +11,6 @@ namespace StudentDocumentManagement.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize(AuthenticationSchemes = "Bearer")]
-    [Authorize(Roles = "Student")]
     public class StudentProfileController : ControllerBase
     {
         private readonly IStudentProfileRepository _studentProfileRepository;
@@ -27,6 +26,7 @@ namespace StudentDocumentManagement.Controllers
 
 
         // get student profile details
+        [Authorize(Roles = "Student")]
         [HttpGet("GetProfile")]
         public async Task<IActionResult> GetProfile()
         {
@@ -60,10 +60,10 @@ namespace StudentDocumentManagement.Controllers
             return Ok(profileDto);
         }
 
-    
-        
 
 
+
+        [Authorize(Roles = "Student")]
         [HttpGet("GetProfilePage")]
         public async Task<IActionResult> GetUserProfile()
         {
@@ -95,9 +95,10 @@ namespace StudentDocumentManagement.Controllers
             return Ok(profileDto);
         }
 
-     // allow all authenticated users
+        // allow all authenticated users
 
         // submit student profile details
+        [Authorize(Roles = "Student")]
         [HttpPost("SubmitProfile")]
         public async Task<IActionResult> SubmitProfile([FromBody] StudentProfileDto dto)
         {
@@ -115,6 +116,7 @@ namespace StudentDocumentManagement.Controllers
 
 
         // get education details
+        [Authorize(Roles = "Student")]
         [HttpGet("GetEducation")]
         public async Task<IActionResult> GetEducation()
         {
@@ -144,6 +146,7 @@ namespace StudentDocumentManagement.Controllers
 
 
         // submit educational details
+        [Authorize(Roles = "Student")]
         [HttpPost("SubmitEducation")]
         public async Task<IActionResult> SubmitEducation([FromBody] StudentEducationListDto dto)
         {
@@ -165,6 +168,7 @@ namespace StudentDocumentManagement.Controllers
 
 
         // get all id proof types
+        [Authorize(Roles = "Student")]
         [HttpGet("IdProofTypes")]
         public async Task<IActionResult> GetIdProofTypes()
         {
@@ -175,6 +179,7 @@ namespace StudentDocumentManagement.Controllers
         }
 
         // get all courses
+        [Authorize(Roles = "Student, Admin")]
         [HttpGet("Courses")]
         public async Task<IActionResult> GetCourses()
         {
@@ -186,6 +191,7 @@ namespace StudentDocumentManagement.Controllers
 
 
         // get all genders
+        [Authorize(Roles = "Student")]
         [HttpGet("Genders")]
         public async Task<IActionResult> GetGenders()
         {
@@ -196,6 +202,7 @@ namespace StudentDocumentManagement.Controllers
         }
 
         // get all states
+        [Authorize(Roles = "Student")]
         [HttpGet("GetAllState")]
         public async Task<IActionResult> GetStates()
         {
@@ -204,6 +211,7 @@ namespace StudentDocumentManagement.Controllers
         }
 
         // get district by state
+        [Authorize(Roles = "Student")]
         [HttpGet("GetDistricts")]
         public async Task<IActionResult> GetDistricts([FromQuery] int stateId)
         {
@@ -215,6 +223,7 @@ namespace StudentDocumentManagement.Controllers
         }
 
         // get pincode by district
+        [Authorize(Roles = "Student")]
         [HttpGet("Pincodes")]
         public async Task<IActionResult> GetPincodes([FromQuery] int districtId)
         {
@@ -223,6 +232,7 @@ namespace StudentDocumentManagement.Controllers
         }
 
         // get post office by pincode
+        [Authorize(Roles = "Student")]
         [HttpGet("Postoffices")]
         public async Task<IActionResult> GetPostOffices([FromQuery] int pincodeId)
         {
@@ -231,6 +241,7 @@ namespace StudentDocumentManagement.Controllers
         }
 
         // acknowledgement for profile submission
+        [Authorize(Roles = "Student")]
         [HttpPost("Acknowledge")]
         public async Task<IActionResult> Acknowledge()
         {
