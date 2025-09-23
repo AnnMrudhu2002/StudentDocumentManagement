@@ -207,5 +207,31 @@ namespace StudentDocumentManagement.Controllers
                 _ => "application/octet-stream"
             };
         }
+
+
+        [Authorize(Roles = "Student")]
+        [HttpGet("IsProfileApproved")]
+        public async Task<IActionResult> IsProfileSubmitted()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+                return Unauthorized(new { message = "User not found" });
+
+            var student = await _studentProfileRepository.GetStudentByUserIdAsync(user.Id);
+            if (student == null)
+                return Ok(new { isProfileApproved = false });
+
+            var documents = await _documentRepository.GetStudentDocumentsWithDetailsAsync(student.StudentId);
+
+            const int requiredDocs = 3;
+
+            var validStatus = "Approved"; //approved
+
+            // Check if student has 3 documents with valid statuses
+            bool isProfileApproved = documents.Count(d => validStatus.Contains(d.StatusName)) >= requiredDocs;
+
+            return Ok(new { isProfileApproved });
+        }
+
     }
 }
