@@ -273,7 +273,11 @@ namespace StudentDocumentManagement.Controllers
             var documents = await _studentProfileRepository.GetDocumentsByStudentIdAsync(student.StudentId);
 
             // Check if at least one document is approved
-            var hasApprovedDoc = documents != null && documents.Any(d => d.Status != null && d.Status.StatusName == "Approved");
+            //var hasApprovedDoc = documents != null && documents.Any(d => d.Status != null && d.Status.StatusName == "Approved");
+            var hasApprovedDoc = documents != null &&
+                             documents.Any(d => d.DocumentTypeId == 1 &&
+                                                d.Status != null &&
+                                                d.Status.StatusName == "Approved");
 
             return Ok(new { allApproved = hasApprovedDoc });
         }
