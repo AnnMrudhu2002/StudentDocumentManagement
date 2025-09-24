@@ -161,6 +161,7 @@ namespace StudentDocManagement.Services.Repository
                 .ToListAsync();
         }
 
+
         public async Task<IEnumerable<District>> GetDistrictsByStateIdAsync(int stateId)
         {
             return await _context.districts

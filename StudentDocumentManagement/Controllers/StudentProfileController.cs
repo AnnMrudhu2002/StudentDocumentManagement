@@ -256,6 +256,7 @@ namespace StudentDocumentManagement.Controllers
         }
 
         [HttpGet("CheckAllDocsApproved")]
+        [Authorize(Roles = "Student")]
         public async Task<IActionResult> CheckAllDocsApproved()
         {
             var user = await _userManager.GetUserAsync(User);
