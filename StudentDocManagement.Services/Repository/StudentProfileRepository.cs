@@ -147,10 +147,14 @@ namespace StudentDocManagement.Services.Repository
 
         public async Task<IEnumerable<State>> GetAllStatesAsync()
         {
+            var excludedIds = new List<int> { 17, 21, 27, 4, 37, 2, 33, 34, 24 };
+
             return await _context.states
+                .Where(s => !excludedIds.Contains(s.StateId))
                 .OrderBy(s => s.StateName)
                 .ToListAsync();
         }
+
 
         public async Task<IEnumerable<District>> GetDistrictsByStateIdAsync(int stateId)
         {
