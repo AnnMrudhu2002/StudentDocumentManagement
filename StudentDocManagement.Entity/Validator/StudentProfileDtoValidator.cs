@@ -10,9 +10,11 @@ namespace StudentDocManagement.Entity.Validator
             ClassLevelCascadeMode = CascadeMode.Stop;
 
             RuleFor(x => x.DOB)
-                .NotEmpty().WithMessage("Date of Birth is required")
-                .Must(d => d.Date <= DateTime.Today)
-                .WithMessage("Date of Birth must be today or in the past");
+     .NotEmpty().WithMessage("Date of Birth is required")
+     .Must(d => d.Date <= DateTime.Today)
+         .WithMessage("Date of Birth must be today or in the past")
+     .Must(d => d <= DateTime.Today.AddYears(-15))
+         .WithMessage("Student must be at least 15 years old");
 
             RuleFor(x => x.GenderId)
                 .NotEmpty().WithMessage("Gender is required");

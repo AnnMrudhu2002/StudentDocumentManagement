@@ -167,5 +167,18 @@ public class AdminController : ControllerBase
         return Ok(list);
     }
 
+    [HttpGet("GetFilteredStudents")]
+    public async Task<IActionResult> GetFilteredStudents([FromQuery] string branch = "", [FromQuery] string name = "", [FromQuery] string registerNo = "")
+    {
+        var students = await _adminRepository.GetFilteredStudentsAsync(branch, name, registerNo);
+        return Ok(students);
+    }
 
+    [HttpGet("GetStudentProfile")]
+    public async Task<IActionResult> GetStudentProfileAndEducation([FromQuery] int studentId)
+    {
+        var profile = await _adminRepository.GetStudentProfileAsync(studentId);
+        if (profile == null) return NotFound(new { message = "Profile not found" });
+        return Ok(profile);
+    }
 }

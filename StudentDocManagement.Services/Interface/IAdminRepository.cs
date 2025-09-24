@@ -13,5 +13,7 @@ public interface IAdminRepository
     Task<bool> UpdateDocumentStatusAsync(int documentId, int statusId, string? remarks);
     Task<Student> GetStudentByIdAsync(int studentId);
     Task<List<StudentEducationDto>> GetStudentEducationsAsync(int studentId);
+    Task<List<StudentListDto>> GetFilteredStudentsAsync(string branch, string name, string registerNo);
+    Task<ProfilePageDto?> GetStudentProfileAsync(int studentId);
 
 }
