@@ -102,7 +102,7 @@ namespace StudentDocManagement.Tests
 
             // Assert
             Assert.True(success);
-            Assert.Equal("Profile updated successfully", message);
+            Assert.Equal("Profile submitted successfully", message);
             Assert.NotNull(student);
             Assert.Equal("New Address", student!.Address);
             Assert.Equal("2222222222", student.PhoneNumber);

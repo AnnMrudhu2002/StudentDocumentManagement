@@ -55,8 +55,6 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssemblyContaining<StudentProfileDtoValidator>();
-
-
 builder.Services.AddScoped<ITokenRepository, TokenRepository>();
 builder.Services.AddScoped<IStudentRepository,StudentRepository>();
 builder.Services.AddScoped<IEmailRepository, EmailRepository>();
@@ -78,9 +76,8 @@ builder.Services.AddControllers()
 
 
 // Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
 builder.Services.AddEndpointsApiExplorer();
 //builder.Services.AddSwaggerGen();
 builder.Services.AddSwaggerGen(c =>

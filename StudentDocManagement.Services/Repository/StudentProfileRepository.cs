@@ -107,8 +107,7 @@ namespace StudentDocManagement.Services.Repository
 
 
         // Submit or update student education
-        public async Task<(bool Success, string Message, StudentEducation? Education)>
-     SubmitEducationAsync(Student student, StudentEducationDto dto)
+        public async Task<(bool Success, string Message, StudentEducation? Education)>SubmitEducationAsync(Student student, StudentEducationDto dto)
         {
             var existing = await _context.StudentEducations
                                          .FirstOrDefaultAsync(e => e.StudentId == student.StudentId &&
@@ -219,7 +218,7 @@ namespace StudentDocManagement.Services.Repository
             return await _context.Documents
                 .Include(d => d.Status)  // Include StatusMaster for checking approval
                 .Where(d => d.StudentId == studentId)
-                .AsNoTracking()          // Read-only query
+                .AsNoTracking()// Read-only query for no overhead 
                 .ToListAsync();
         }
 
