@@ -14,9 +14,10 @@ namespace StudentDocumentManagement.Controllers
     [Authorize(Roles = "Student")]
     public class StudentDashboardController : ControllerBase
     {
-        private readonly IDashboardRepository _dashboardRepository;
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IStudentProfileRepository _studentProfileRepository;
+        private readonly IDashboardRepository _dashboardRepository; // Repository to calculate dashboard data
+        private readonly UserManager<ApplicationUser> _userManager; // Identity UserManager to get current user
+        private readonly IStudentProfileRepository _studentProfileRepository; // Repository for student profile data
+
 
         public StudentDashboardController(IDashboardRepository dashboardRepository,
                                    UserManager<ApplicationUser> userManager,
@@ -28,7 +29,7 @@ namespace StudentDocumentManagement.Controllers
             _studentProfileRepository = studentProfileRepository;
         }
 
-
+        // API to get profile completion percentage for the logged-in student
         [HttpGet("ProfileCompletion")]
         public async Task<IActionResult> GetProfileCompletion()
         {
@@ -41,14 +42,14 @@ namespace StudentDocumentManagement.Controllers
             var student = await _studentProfileRepository.GetStudentByUserIdAsync(user.Id);
             if (student == null)
             {
-              
+                // If student profile is not created yet, return 0% completion
                 return Ok(new { CompletionPercentage = 0 });
             }
            
 
             // Get profile completion
             var completion = await _dashboardRepository.GetProfileCompletionAsync(student);
-
+            // Return completion percentage as JSON
             return Ok(new {CompletionPercentage = completion });
         }
 

@@ -14,27 +14,28 @@ namespace StudentDocManagement.Services.Repository
             _context = context;
         }
 
+        // Get student along with related data by UserId
         public async Task<Student?> GetStudentByUserIdAsync(string userId)
         {
             return await _context.Students
-                .Include(s => s.Course)          
-                .Include(s => s.IdProofType)
-                .Include(s => s.Gender)
-                .Include(s => s.StudentEducations)   
-                .Include(s => s.Documents)
+                 .Include(s => s.Course)          // Include course details
+                .Include(s => s.IdProofType)     // Include ID proof type
+                .Include(s => s.Gender)          // Include gender
+                .Include(s => s.StudentEducations)   // Include education records
+                .Include(s => s.Documents)       // Include uploaded documents
                 .FirstOrDefaultAsync(s => s.UserId == userId);
         }
 
-
-
+        // Submit or update student profile
         public async Task<(bool Success, string Message, Student? Student)> SubmitProfileAsync(ApplicationUser user, StudentProfileDto dto)
 
         {
+
             var existing = await GetStudentByUserIdAsync(user.Id);
 
             if (existing == null)
             {
-                // Create new
+                // Create new student profile
                 var student = new Student
                 {
                     UserId = user.Id,
@@ -65,7 +66,7 @@ namespace StudentDocManagement.Services.Repository
             else
             {
 
-                // Update
+                // Update existing profile
                 existing.DOB = dto.DOB;
                 existing.GenderId = dto.GenderId;
                 existing.PhoneNumber = dto.PhoneNumber;
@@ -88,7 +89,7 @@ namespace StudentDocManagement.Services.Repository
                 return (true, "Profile updated successfully", existing);
             }
         }
-
+        // Get student by StudentId (basic info, optional course details)
         public async Task<Student> GetStudentByIdAsync(int studentId)
         {
             // Include related data if needed, e.g., Course
@@ -96,7 +97,7 @@ namespace StudentDocManagement.Services.Repository
                 .Include(s => s.Course) // optional, only if you need CourseName
                 .FirstOrDefaultAsync(s => s.StudentId == studentId);
         }
-
+        // Get all education records for a student
         public async Task<List<StudentEducation>> GetEducationByStudentIdAsync(int studentId)
         {
             return await _context.StudentEducations
@@ -105,7 +106,7 @@ namespace StudentDocManagement.Services.Repository
         }
 
 
-
+        // Submit or update student education
         public async Task<(bool Success, string Message, StudentEducation? Education)>
      SubmitEducationAsync(Student student, StudentEducationDto dto)
         {
@@ -115,6 +116,7 @@ namespace StudentDocManagement.Services.Repository
 
             if (existing == null)
             {
+                // Add new education record
                 var education = new StudentEducation
                 {
                     StudentId = student.StudentId,
@@ -132,6 +134,7 @@ namespace StudentDocManagement.Services.Repository
             }
             else
             {
+                // Update existing education record
                 existing.InstituteName = dto.InstituteName;
                 existing.PassingYear = dto.PassingYear;
                 existing.MarksPercentage = dto.MarksPercentage;
@@ -151,6 +154,8 @@ namespace StudentDocManagement.Services.Repository
         //        .OrderBy(s => s.StateName)
         //        .ToListAsync();
         //}
+
+        // Get all states except excluded ones
         public async Task<IEnumerable<State>> GetAllStatesAsync()
         {
             var excludedIds = new List<int> { 17, 21, 27, 4, 37, 2, 33, 34, 24 };
@@ -161,7 +166,7 @@ namespace StudentDocManagement.Services.Repository
                 .ToListAsync();
         }
 
-
+        // Get districts by state
         public async Task<IEnumerable<District>> GetDistrictsByStateIdAsync(int stateId)
         {
             return await _context.districts
@@ -169,6 +174,8 @@ namespace StudentDocManagement.Services.Repository
                 .OrderBy(d => d.DistrictName)
                 .ToListAsync();
         }
+
+        // Get pincodes by district
         public async Task<IEnumerable<Pincode>> GetPincodesByDistrictIdAsync(int districtId)
         {
             return await _context.pincodes
@@ -177,6 +184,7 @@ namespace StudentDocManagement.Services.Repository
                 .ToListAsync();
         }
 
+        // Get post offices by pincode
         public async Task<IEnumerable<PostOffices>> GetPostOfficesByPincodeIdAsync(int pincodeId)
         {
             return await _context.postOffices
@@ -185,8 +193,7 @@ namespace StudentDocManagement.Services.Repository
                 .ToListAsync();
         }
 
-
-
+        // Acknowledge profile submission after uploading required documents
         public async Task<(bool Success, string Message)> AcknowledgeAsync(string userId)
         {
             var student = await _context.Students.FirstOrDefaultAsync(s => s.UserId == userId);
@@ -206,6 +213,7 @@ namespace StudentDocManagement.Services.Repository
             return (true, "Profile submitted successfully");
         }
 
+        // Get all documents uploaded by a student
         public async Task<List<Document>> GetDocumentsByStudentIdAsync(int studentId)
         {
             return await _context.Documents

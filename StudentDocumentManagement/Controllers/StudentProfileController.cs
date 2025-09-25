@@ -14,9 +14,10 @@ namespace StudentDocumentManagement.Controllers
     [Authorize(AuthenticationSchemes = "Bearer")]
     public class StudentProfileController : ControllerBase
     {
-        private readonly IStudentProfileRepository _studentProfileRepository;
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly AppDbContext _context;
+        private readonly IStudentProfileRepository _studentProfileRepository; // Repository to manage student profile data
+        private readonly UserManager<ApplicationUser> _userManager; // Identity UserManager to get current user
+        private readonly AppDbContext _context; // EF DbContext for direct database queries
+
 
         public StudentProfileController(IStudentProfileRepository studentProfileRepository, UserManager<ApplicationUser> userManager, AppDbContext context)
         {
@@ -31,16 +32,17 @@ namespace StudentDocumentManagement.Controllers
         [HttpGet("GetProfile")]
         public async Task<IActionResult> GetProfile()
         {
+            // Get currently logged-in user
             var user = await _userManager.GetUserAsync(User);
             if (user is null)
                 return Unauthorized(new { message = "User not found" });
-
+            // Get student's profile by user Id
             var student = await _studentProfileRepository.GetStudentByUserIdAsync(user.Id);
             if (student is null)
-                return Ok(null);
+                return Ok(null);// Return null if no profile exists
 
 
-
+            // Map student entity to DTO to return only needed fields
             var profileDto = new StudentProfileDto
             {
                 DOB = student.DOB,
@@ -63,7 +65,7 @@ namespace StudentDocumentManagement.Controllers
 
 
 
-
+        // Get detailed profile page for student (includes user full name and email)
         [Authorize(Roles = "Student")]
         [HttpGet("GetProfilePage")]
         public async Task<IActionResult> GetUserProfile()
@@ -76,7 +78,7 @@ namespace StudentDocumentManagement.Controllers
             if (student is null)
                 return NotFound(new { message = "Profile not found" });
             //var prof = student.Adapt<StudentProfileDto>();
-
+            // Map student and user data to ProfilePageDto
             var profileDto = new ProfilePageDto
             {
                 DOB = student.DOB,
@@ -106,7 +108,7 @@ namespace StudentDocumentManagement.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
                 return Unauthorized(new { message = "User not found" });
-
+            // Call repository to submit profile
             var (success, message, student) = await _studentProfileRepository.SubmitProfileAsync(user, dto);
 
             if (!success)
@@ -132,8 +134,8 @@ namespace StudentDocumentManagement.Controllers
             var educationList = await _studentProfileRepository.GetEducationByStudentIdAsync(student.StudentId);
 
             if (educationList == null || educationList.Count == 0)
-                return Ok(new List<StudentEducationDto>());
-
+                return Ok(new List<StudentEducationDto>());// Return empty list if no education records
+            // Map to DTO
             var result = educationList.Select(e => new StudentEducationDto
             {
                 EducationLevel = e.EducationLevel,   
@@ -158,7 +160,7 @@ namespace StudentDocumentManagement.Controllers
             var student = await _studentProfileRepository.GetStudentByUserIdAsync(user.Id);
             if (student == null)
                 return NotFound(new { message = "Student profile not found" });
-
+            // Submit each education record
             foreach (var edu in dto.EducationDetails)
             {
                 await _studentProfileRepository.SubmitEducationAsync(student, edu);

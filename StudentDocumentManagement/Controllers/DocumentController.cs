@@ -13,11 +13,11 @@ namespace StudentDocumentManagement.Controllers
     [Authorize(AuthenticationSchemes = "Bearer")]
     public class DocumentController : ControllerBase
     {
-        private readonly IDocumentRepository _documentRepository;
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IStudentProfileRepository _studentProfileRepository;
-        private readonly AppDbContext _context;
-        private readonly IWebHostEnvironment _env;
+        private readonly IDocumentRepository _documentRepository; // Repository for handling document operations
+        private readonly UserManager<ApplicationUser> _userManager; // Identity user manager
+        private readonly IStudentProfileRepository _studentProfileRepository; // Repository for student profile
+        private readonly AppDbContext _context; // EF Core database context
+        private readonly IWebHostEnvironment _env; // For file storage path, environment info
 
         public DocumentController(IDocumentRepository documentRepository, UserManager<ApplicationUser> userManager,
             IStudentProfileRepository studentProfileRepository,AppDbContext context, IWebHostEnvironment env)
@@ -29,19 +29,18 @@ namespace StudentDocumentManagement.Controllers
             _env = env;
         }
 
-
-        // upload document
+        // Upload a new document (only students can upload)
         [HttpPost("UploadDocument")]
         [Consumes("multipart/form-data")]
         [Authorize(Roles = "Student")]
 
         public async Task<IActionResult> UploadDocument(IFormFile file, [FromForm] int documentTypeId)
         {
-
+            // Get the currently logged-in user
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
                 return Unauthorized(new { message = "User not found" });
-
+            // Prepare DTO for repository
             var fileDto = new FileUploadDto
             {
                 FileName = file.FileName,
@@ -50,7 +49,7 @@ namespace StudentDocumentManagement.Controllers
                 ContentType = file.ContentType,
                 FileSize = file.Length
             };
-
+            // Call repository to save file
             var (success, message, document) = await _documentRepository.UploadDocumentAsync(user, fileDto);
 
             if (!success)
@@ -78,7 +77,8 @@ namespace StudentDocumentManagement.Controllers
         //}
 
 
-        // get student documents
+
+        // Get documents of the logged-in student
         [Authorize(Roles = "Student")]
         [HttpGet("My-documents")]
         public async Task<IActionResult> GetMyDocuments()
@@ -86,11 +86,11 @@ namespace StudentDocumentManagement.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
                 return Unauthorized(new { message = "User not found" });
-
+            // Find student profile for the logged-in user
             var student = await _studentProfileRepository.GetStudentByUserIdAsync(user.Id);
             if (student == null)
                 return NotFound("Student profile not found");
-
+            // Fetch all documents of the student
             var docs = await _documentRepository.GetStudentDocumentsWithDetailsAsync(student.StudentId);
             return Ok(docs);
         }
@@ -112,7 +112,7 @@ namespace StudentDocumentManagement.Controllers
         }
 
 
-        // download document
+        // Download a document (Students or Admin can download)
         [Authorize(Roles = "Student, Admin")]
         [HttpGet("Download")]
         public async Task<IActionResult> DownloadDocument([FromQuery] int documentId)
@@ -120,11 +120,11 @@ namespace StudentDocumentManagement.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
                 return Unauthorized(new { message = "User not found" });
-
+            // Get document bytes and name from repository
             var result = await _documentRepository.GetDocumentForDownloadAsync(documentId, user);
             if (result == null)
                 return StatusCode(403, "You are not allowed to download this document or it does not exist.");
-
+            // Return file as download
             return File(result.Value.FileBytes, "application/octet-stream", result.Value.FileName);
         }
 
@@ -157,7 +157,7 @@ namespace StudentDocumentManagement.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
                 return Unauthorized(new { message = "User not found" });
-
+            // Call repository to delete document
             var (success, message) = await _documentRepository.DeleteDocumentAsync(user, documentId);
 
             if (!success)
@@ -166,7 +166,7 @@ namespace StudentDocumentManagement.Controllers
             return Ok(new { message });
         }
 
-
+        // Get all available document types (no authentication required)
         [AllowAnonymous]
         [HttpGet("GetAllDocumentType")]
         public async Task<ActionResult<IEnumerable<DocumentType>>> GetDocumentTypes()
@@ -175,6 +175,7 @@ namespace StudentDocumentManagement.Controllers
             return Ok(types);
         }
 
+        // View a document inline (browser opens PDF or image)
         [Authorize(Roles = "Student, Admin")]
         [HttpGet("view/{documentId}")]
         public async Task<IActionResult> ViewDocument(int documentId)
@@ -194,7 +195,7 @@ namespace StudentDocumentManagement.Controllers
             // Stream file inline (browser opens PDF/image)
             return File(fileBytes, contentType);
         }
-
+        // Helper method to determine MIME type based on file extension
         private string GetContentType(string fileName)
         {
             var ext = Path.GetExtension(fileName).ToLowerInvariant();

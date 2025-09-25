@@ -138,9 +138,10 @@ public class AdminController : ControllerBase
             DocumentTypeName = d.DocumentType.TypeName
         }).ToListAsync();
 
-        return Ok(docs);
+        return Ok(docs);// return filtered documents
     }
 
+    // Get list of all courses
 
     [HttpGet("Courses")]
     public async Task<IActionResult> GetCourses()
@@ -151,7 +152,7 @@ public class AdminController : ControllerBase
         return Ok(list);
     }
 
-
+    // Get statuses (only Approved, Pending, Rejected)
     [HttpGet("Statuses")]
     public async Task<IActionResult> GetStatuses()
     {
@@ -166,19 +167,21 @@ public class AdminController : ControllerBase
 
         return Ok(list);
     }
-
+    // Get students filtered by branch, name, or register number
     [HttpGet("GetFilteredStudents")]
     public async Task<IActionResult> GetFilteredStudents([FromQuery] string branch = "", [FromQuery] string name = "", [FromQuery] string registerNo = "")
     {
         var students = await _adminRepository.GetFilteredStudentsAsync(branch, name, registerNo);
         return Ok(students);
     }
-
+    // API to get profile with education (from repository directly)
     [HttpGet("GetStudentProfile")]
     public async Task<IActionResult> GetStudentProfileAndEducation([FromQuery] int studentId)
     {
         var profile = await _adminRepository.GetStudentProfileAsync(studentId);
+        // If student not found
         if (profile == null) return NotFound(new { message = "Profile not found" });
+        //If found, return 200 OK with profile data
         return Ok(profile);
     }
 }

@@ -14,25 +14,29 @@ namespace StudentDocManagement.Tests
 {
     public class AdminControllerTests
     {
+        // Mocked dependencies for the controller
         private readonly Mock<IAdminRepository> _mockRepo;
         private readonly Mock<UserManager<ApplicationUser>> _mockUserManager;
         private readonly AppDbContext _context;
         private readonly AdminController _controller;
 
+        // Constructor sets up in-memory database, mocks, and controller
         public AdminControllerTests()
         {
             _mockRepo = new Mock<IAdminRepository>();
 
+            // Mock UserManager (requires IUserStore)
             var storeMock = new Mock<IUserStore<ApplicationUser>>();
             _mockUserManager = new Mock<UserManager<ApplicationUser>>(
                 storeMock.Object, null, null, null, null, null, null, null, null);
 
-            // In-memory DB
+            // Setup in-memory database for testing
             var options = new DbContextOptionsBuilder<AppDbContext>()
                 .UseInMemoryDatabase(Guid.NewGuid().ToString())
                 .Options;
             _context = new AppDbContext(options);
 
+            // Initialize controller with mocks
             _controller = new AdminController(_mockRepo.Object, _mockUserManager.Object, _context);
         }
 
@@ -40,21 +44,22 @@ namespace StudentDocManagement.Tests
         [Fact]
         public async Task GetStudentsForApproval_ReturnsOkWithList()
         {
-         
-
+            // Arrange: mock repository to return a sample student
             var students = new List<StudentWithDocsDto>
-    {
-        new StudentWithDocsDto
-        {
-            StudentId = 1,
-            FullName = "John Doe",
-            RegisterNo = "REG123"
-        }
-    };
+            {
+                new StudentWithDocsDto
+                {
+                    StudentId = 1,
+                    FullName = "John Doe",
+                    RegisterNo = "REG123"
+                }
+            };
             _mockRepo.Setup(x => x.GetStudentsForApprovalAsync()).ReturnsAsync(students);
 
+            // Act: call controller method
             var result = await _controller.GetStudentsForApproval();
 
+            // Assert: check result is OkObjectResult and value matches
             var ok = Assert.IsType<OkObjectResult>(result);
             Assert.Equal(students, ok.Value);
         }
@@ -66,6 +71,7 @@ namespace StudentDocManagement.Tests
         {
             int studentId = 1;
 
+            // Arrange: mock repository to return sample documents
             var docs = new List<StudentDocumentDto>
             {
                 new StudentDocumentDto
@@ -76,12 +82,13 @@ namespace StudentDocManagement.Tests
                     Remarks = "Need verification"
                 }
             };
-
             _mockRepo.Setup(x => x.GetDocumentsByStudentIdAsync(studentId))
                      .ReturnsAsync(docs);
 
+            // Act
             var result = await _controller.GetDocumentsByStudentId(studentId);
 
+            // Assert
             var ok = Assert.IsType<OkObjectResult>(result);
             Assert.Equal(docs, ok.Value);
         }
@@ -91,11 +98,14 @@ namespace StudentDocManagement.Tests
         [Fact]
         public async Task UpdateDocumentStatus_Success_ReturnsOk()
         {
+            // Arrange: mock UpdateDocumentStatusAsync to return true
             _mockRepo.Setup(x => x.UpdateDocumentStatusAsync(1, 2, "Approved"))
                      .ReturnsAsync(true);
 
+            // Act
             var result = await _controller.UpdateDocumentStatus(1, 2, "Approved");
 
+            // Assert: result is Ok and contains success message
             var ok = Assert.IsType<OkObjectResult>(result);
             Assert.Contains("Status updated successfully", ok.Value.ToString());
         }
@@ -103,11 +113,14 @@ namespace StudentDocManagement.Tests
         [Fact]
         public async Task UpdateDocumentStatus_NotFound_ReturnsNotFound()
         {
+            // Arrange: mock UpdateDocumentStatusAsync to return false
             _mockRepo.Setup(x => x.UpdateDocumentStatusAsync(1, 2, "Approved"))
                      .ReturnsAsync(false);
 
+            // Act
             var result = await _controller.UpdateDocumentStatus(1, 2, "Approved");
 
+            // Assert: result is NotFoundObjectResult
             Assert.IsType<NotFoundObjectResult>(result);
         }
         #endregion
@@ -116,6 +129,7 @@ namespace StudentDocManagement.Tests
         [Fact]
         public async Task GetStudentProfile_ExistingStudent_ReturnsOk()
         {
+            // Arrange: create sample student and education data
             var student = new Student
             {
                 StudentId = 1,
@@ -140,12 +154,15 @@ namespace StudentDocManagement.Tests
                 }
             };
 
+            // Mock repository and UserManager calls
             _mockRepo.Setup(x => x.GetStudentByIdAsync(1)).ReturnsAsync(student);
             _mockRepo.Setup(x => x.GetStudentEducationsAsync(1)).ReturnsAsync(educations);
             _mockUserManager.Setup(x => x.FindByIdAsync("user1")).ReturnsAsync(student.User);
 
+            // Act
             var result = await _controller.GetStudentProfile(1);
 
+            // Assert: check OkObjectResult and profile data
             var ok = Assert.IsType<OkObjectResult>(result);
             var profile = Assert.IsType<ProfilePageDto>(ok.Value);
 
@@ -156,22 +173,28 @@ namespace StudentDocManagement.Tests
         [Fact]
         public async Task GetStudentProfile_StudentNotFound_ReturnsNotFound()
         {
+            // Arrange: mock repository returns null
             _mockRepo.Setup(x => x.GetStudentByIdAsync(1)).ReturnsAsync((Student?)null);
 
+            // Act
             var result = await _controller.GetStudentProfile(1);
 
+            // Assert: NotFoundObjectResult returned
             Assert.IsType<NotFoundObjectResult>(result);
         }
 
         [Fact]
         public async Task GetStudentProfile_UserNotFound_ReturnsNotFound()
         {
+            // Arrange: student exists but UserManager returns null
             var student = new Student { StudentId = 1, UserId = "user1" };
             _mockRepo.Setup(x => x.GetStudentByIdAsync(1)).ReturnsAsync(student);
             _mockUserManager.Setup(x => x.FindByIdAsync("user1")).ReturnsAsync((ApplicationUser?)null);
 
+            // Act
             var result = await _controller.GetStudentProfile(1);
 
+            // Assert: NotFoundObjectResult returned
             Assert.IsType<NotFoundObjectResult>(result);
         }
         #endregion

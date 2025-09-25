@@ -19,9 +19,10 @@ namespace StudentDocManagement.Services.Repository
             _studentProfileRepository = studentProfileRepository;
             _userManager = userManager;
         }
-
+        // Upload a new document for a student
         public async Task<(bool Success, string Message, Document? Document)> UploadDocumentAsync(ApplicationUser user, FileUploadDto fileDto)
         {
+            // Get student associated with the logged-in user
             var student = await _studentProfileRepository.GetStudentByUserIdAsync(user.Id);
             if (student == null)
                 return (false, "Please complete profile before uploading", null);
@@ -52,17 +53,17 @@ namespace StudentDocManagement.Services.Repository
                 DocumentTypeId = fileDto.DocumentTypeId,
                 FileName = uniqueFileName,
                 FilePath = filePath,
-                StatusId = 1, // Pending
+                StatusId = 1, // Default status = Pending
                 UploadedOn = DateTime.Now
             };
-
-           await _context.Documents.AddAsync(document);
+            // Save document record to database
+            await _context.Documents.AddAsync(document);
            await _context.SaveChangesAsync();
 
             return (true, "Document uploaded successfully", document);
         }
 
-
+        // Validate file type and size
         public string? ValidateFile(FileUploadDto fileDto)
         {
 
@@ -79,20 +80,21 @@ namespace StudentDocManagement.Services.Repository
                 return "Invalid file format. Only PDF, JPG, and PNG are allowed.";
             }
 
-            return null; // valid
+            return null; // File is valid
         }
 
+        // Save file to disk and return path and filename
         public async Task<(bool Success, string FilePath, string FileName, string? Error)> SaveFileToDiskAsync(FileUploadDto fileDto)
         {
             try
             {
                 var storagePath = Path.Combine(Directory.GetCurrentDirectory(), "FileStorage");
                 if (!Directory.Exists(storagePath))
-                    Directory.CreateDirectory(storagePath);
-
+                    Directory.CreateDirectory(storagePath);// Create directory if not exists
+                // Create unique filename to prevent overwriting
                 var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(fileDto.FileName);
                 var filePath = Path.Combine(storagePath, uniqueFileName);
-
+                // Copy file stream to disk
                 await using var stream = new FileStream(filePath, FileMode.Create);
                 await fileDto.FileStream.CopyToAsync(stream);
 
@@ -105,7 +107,7 @@ namespace StudentDocManagement.Services.Repository
         }
 
 
-        //download
+        // Get a document by its ID (used for download or update)
         public async Task<Document?> GetByIdAsync(int id)
         {
             return await _context.Documents
@@ -116,7 +118,7 @@ namespace StudentDocManagement.Services.Repository
         }
 
 
-        //my documents
+        // Get all documents of a student with detailed info
         public async Task<IEnumerable<StudentDocumentDto>> GetStudentDocumentsWithDetailsAsync(int studentId)
         {
             return await _context.Documents
@@ -135,7 +137,7 @@ namespace StudentDocManagement.Services.Repository
                 .ToListAsync();
         }
 
-
+        // Get file bytes for download by student or admin
         public async Task<(byte[] FileBytes, string FileName)?> GetDocumentForDownloadAsync(
            int documentId, ApplicationUser user)
         {
@@ -158,8 +160,8 @@ namespace StudentDocManagement.Services.Repository
             var fileBytes = await File.ReadAllBytesAsync(doc.FilePath);
             return (fileBytes, doc.FileName);
         }
-    
 
+        // Update document status (approve/reject) and remarks
         public async Task<bool> UpdateStatusAsync(int documentId, int statusId, string? remarks)
         {
             var doc = await _context.Documents.FindAsync(documentId);
@@ -175,6 +177,7 @@ namespace StudentDocManagement.Services.Repository
             return true;
         }
 
+        // Re-upload an existing document (replace file and reset status)
         public async Task<bool> ReUploadDocumentAsync(Document existingDoc, IFormFile file)
         {
             try
@@ -209,7 +212,7 @@ namespace StudentDocManagement.Services.Repository
             }
         }
 
-
+        // Delete a document (only if Pending)
         public async Task<(bool Success, string Message)> DeleteDocumentAsync(ApplicationUser user, int documentId)
         {
             var student = await _studentProfileRepository.GetStudentByUserIdAsync(user.Id);

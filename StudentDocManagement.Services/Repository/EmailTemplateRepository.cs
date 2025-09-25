@@ -4,8 +4,10 @@ namespace StudentDocManagement.Services.Repository
 {
     public class EmailTemplateRepository: IEmailTemplateRepository
     {
+        // Method to generate HTML email template for approved student registration
         public string GetApprovalTemplate(string fullName, string email, string registerNo)
         {
+            // Return a formatted HTML string with placeholders filled
             return $@"
         <p>Dear <b>{fullName}</b>,</p>
         <p>We are pleased to inform you that your registration with the 
@@ -26,8 +28,10 @@ namespace StudentDocManagement.Services.Repository
         Student Document Management System</p>";
         }
 
+        // Method to generate HTML email template for rejected student registration
         public string GetRejectionTemplate(string fullName, string email, string registerNo)
         {
+            // Return a formatted HTML string indicating rejection
             return $@"
         <p>Dear <b>{fullName}</b>,</p>
         <p>We regret to inform you that your registration with the 
